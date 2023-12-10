@@ -28,4 +28,4 @@ X_TWITTER_AUTH_TYPE = 'OAuth2Session'
 X_TWITTER_CLIENT_LANGUAGE = "en"
 
 
-
+AUTHORITY = "twitter.com"
