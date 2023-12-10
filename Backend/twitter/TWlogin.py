@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from typing import (
     Union
 )
-from .utils import getToken , getUserID
+from core.utils import *
 
 class LoginUsingBrowser(object):
     LOGINURL = "https://twitter.com/i/flow/login"
