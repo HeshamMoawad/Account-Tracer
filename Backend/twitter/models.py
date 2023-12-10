@@ -1,5 +1,5 @@
 from django.db import models
-from .utils import getToken , getUserID
+from core.utils import getToken , getUserID
 # Create your models here.
 
 
