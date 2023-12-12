@@ -1,8 +1,8 @@
 from requests import  Session , Response
 from .constants import (
-    AUTHORIZATION ,
+    HEADERS ,
 )
-from .utils import getToken , getUserID
+from .utils import CookiesParser
 from easydict import EasyDict
 from .types import (
         HttpResponseTypes , 
@@ -16,7 +16,7 @@ class TwitterAbastractResponse(Response):
     class StatusCodeTypes(HttpStatusCodeTypes): ...
 
     def __init__(self,response:Response,**kwargs) -> None:
-        super().__init__()
+        # super().__init__()
         self.__dict__ = response.__dict__
         # Information responses
         self.__Informational = self.Type.informational()
@@ -85,36 +85,44 @@ class TwitterAbastractResponse(Response):
 class TwitterAbstractSession(Session): 
 
     def __init__(self , cookies:str) -> None:
-        self.cookies = cookies
-        self.token = getToken(self.cookies)
-        self.userID = getUserID(self.cookies)
         super().__init__()
+        self.cookies_str = cookies
+        self.parser = CookiesParser(cookies)
+        self.headers = HEADERS.copy()
+        self.headers.update({"cookie":self.cookies_str})
+        self.headers.update({"x-csrf-token":self.parser.token})
+        self.headers.update({'referer': 'https://twitter.com/home'})
+        print(f"Headers : {self.headers}")
 
 
-    def get(self, url:str ,  params:dict=None , data=None , headers:dict=None , timeout:int=None , proxies:dict=None,  json:dict=None ) -> TwitterAbastractResponse:
-        return TwitterAbastractResponse(super().get(
-            url, 
-            params=params, 
-            data=data, 
-            headers=headers, 
-            cookies=self.cookies,
-            timeout=timeout, 
-            proxies=proxies, 
-            json=json,
-            ))
-    
-    def post(self, url: str , data:dict=None, json:dict=None,  params:dict=None, headers:dict=None,timeout:int=None, proxies:dict=None) -> TwitterAbastractResponse:
-        
-        return TwitterAbastractResponse(super().post(
-            url, 
-            params=params, 
-            data=data, 
-            headers=headers, 
-            cookies=self.cookies,
-            timeout=timeout, 
-            proxies=proxies, 
-            json=json,
-            ))
+    def get(self, url:str ,  params:dict=None , data=None , timeout:int=None , proxies:dict=None,  json:dict=None ) -> TwitterAbastractResponse:
+        try : 
+            return TwitterAbastractResponse(response = super().get(
+                url, 
+                params=params, 
+                data=data, 
+                headers=self.headers, 
+                timeout=timeout, 
+                proxies=proxies, 
+                json=json,
+                ))
+        except Exception as e :
+            print(f"[-]\tError : {e}")
+
+
+    def post(self, url: str , data:dict=None, json:dict=None,  params:dict=None, timeout:int=None, proxies:dict=None) -> TwitterAbastractResponse:
+        try : 
+            return TwitterAbastractResponse(response = super().post(
+                url, 
+                params=params, 
+                data=data, 
+                headers=self.headers, 
+                timeout=timeout, 
+                proxies=proxies, 
+                json=json,
+                ))
+        except Exception as e :
+            print(f"[-]\tError : {e}")
 
 
 
