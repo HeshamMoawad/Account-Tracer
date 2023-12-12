@@ -1,23 +1,18 @@
 from urllib.parse import unquote
+from http.cookies import re, SimpleCookie
+from .constants import TOKEN_IDENTIFIRE , USERID_IDENTIFIRE
 
-TOKEN_IDENTIFIRE = "ct0" 
-ID_IDENTIFIRE = "twid"
 
-def getValuesFromCookie(identifire:str, cookie:str)->dict:
-    value = ''
-    key = identifire
-    for slice in cookie.split(";") :
-        if identifire in slice :
-            key , value = slice.split("=")
-            break
-    return {key.replace(" ",""):unquote(value).replace(" ","")}
-     
+class CookiesParser(object):
+    def __init__(self,cookies) -> None:
+        self.simplecookie = SimpleCookie()
+        self.simplecookie.load(cookies)
+        self.cookies_as_dict = {k: v.value for k, v in self.simplecookie.items()}
 
-def getToken(cookie:str)->str:
-    return getValuesFromCookie(TOKEN_IDENTIFIRE,cookie)[TOKEN_IDENTIFIRE]
-
-def getUserID(cookie:str)->str:
-    user_id:str = getValuesFromCookie(ID_IDENTIFIRE,cookie)[ID_IDENTIFIRE]
-    return user_id.split("=")[-1]
-
+    @property
+    def token(self):
+        return unquote(self.cookies_as_dict[TOKEN_IDENTIFIRE])
+    @property
+    def userID(self):
+        return unquote(self.cookies_as_dict[USERID_IDENTIFIRE]).split("=")[-1]
 

@@ -4,10 +4,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.chrome.options import Options
+from seleniumwire.webdriver import ChromeOptions
 from typing import (
     Union
 )
+import logging 
 from core.utils import *
+
+logging.getLogger('seleniumwire').setLevel(logging.WARNING)
 
 class LoginUsingBrowser(object):
     LOGINURL = "https://twitter.com/i/flow/login"
@@ -18,8 +23,14 @@ class LoginUsingBrowser(object):
     confirmLOGINXPATH = """//div[@role="presentation"]"""
     
     def login(self , UserName,Password )-> Union[dict,None] :
+        chrome_options = ChromeOptions()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument('--disable-logging')
+        print(chrome_options.arguments)
         try :
-            self.driver = webdriver.Chrome()
+            self.driver = webdriver.Chrome(options = chrome_options)
             self.driver.minimize_window()
             self.driver.get('https://twitter.com/login')
             print("browser opened")
@@ -33,13 +44,15 @@ class LoginUsingBrowser(object):
             print("click login")
             self.wait_element(self.confirmLOGINXPATH)
             print("confirm login")
-            cookies = self.driver.execute_script("return document.cookie;")
-            print(f"\n{cookies}\n")
+            self.driver.get(f"https://twitter.com/{UserName}")
+            print("get profile")
+            req = self.driver.wait_for_request("/UserByScreenName").headers
+            cookies = req['cookie']
+            # cookies = self.driver.execute_script("return document.cookie;")
+            print(f"\n{req}\n")
             self.driver.quit()
             return dict( 
-                x_csrf_token = getToken(cookies),
                 cookie = cookies,
-                rest_id= getUserID(cookies),
                 username = UserName ,
                 password = Password 
                 )

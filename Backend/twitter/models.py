@@ -1,5 +1,5 @@
 from django.db import models
-from core.utils import getToken , getUserID
+# from core.utils import getToken , getUserID
 # Create your models here.
 
 
@@ -13,13 +13,13 @@ class TwitterAccount(models.Model):
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date" , auto_now=True)
 
-    @property
-    def token (self)->str:
-        return getToken(self.cookies)
+    # @property
+    # def token (self)->str:
+    #     return getToken(self.cookies)
 
-    @property
-    def user_id (self)->str:
-        return getUserID(self.cookies)
+    # @property
+    # def user_id (self)->str:
+    #     return getUserID(self.cookies)
         
     def __str__(self) -> str:
         return f"{self.handle} - {self.name} - Created at {self.created_datetime}"
