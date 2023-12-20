@@ -15,12 +15,12 @@ const Nav = () => {
                     href="/"
                     className="d-inline-flex link-body-emphasis text-decoration-none"
                 >
-                <img src={Logo} alt="Bootstrap" width="40" height="30" />
+                <img src={Logo} alt="Bootstrap" width="100" height="50" />
                 </a>
                 </div>
                 <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li>
-                    <Link to="twitter" className="nav-link px-2">
+                    <Link to="" className="nav-link px-2">
                     Home
                     </Link>
                 </li>
@@ -30,7 +30,7 @@ const Nav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link to="twitter" className="nav-link px-2">
+                    <Link to="tiktok" className="nav-link px-2">
                     TikTok
                     </Link>
                 </li>
