@@ -35,5 +35,14 @@ HEADERS = {
 
 USERS_BY_REST_IDS_URL = "https://twitter.com/i/api/graphql/ANSatAhgHWrK9d7HK92_mg/UsersByRestIds"
 USER_TWEETS_URL = "https://twitter.com/i/api/graphql/dh2lDmjqEkxCWQK_UxkH4w/UserTweets"
+USER_TWEETS_AND_REPLIES_URL = "https://twitter.com/i/api/graphql/3slXvioOujxu8FYX5t_Jmw/UserTweetsAndReplies"
 
 
+## Ranges
+SUCCESS_STATUS_CODES = range(200,400)
+FAILD_STATUS_CODES = range(400,501)
+
+
+## TYPES 
+
+ADD_ENTRY_TYPE = 'TimelineAddEntries'
