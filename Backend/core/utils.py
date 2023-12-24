@@ -1,7 +1,7 @@
 from urllib.parse import unquote
 from http.cookies import re, SimpleCookie
 from .constants import TOKEN_IDENTIFIRE , USERID_IDENTIFIRE
-
+from datetime import datetime
 
 class CookiesParser(object):
     def __init__(self,cookies) -> None:
@@ -16,3 +16,19 @@ class CookiesParser(object):
     def userID(self):
         return unquote(self.cookies_as_dict[USERID_IDENTIFIRE]).split("=")[-1]
 
+
+
+# def check_date_range(datetime_list, from_date, to_date):
+#     """
+#     Check if each datetime object's date in the list falls within the specified date range.
+
+#     Parameters:
+#     - datetime_list (list): List of datetime objects to be checked.
+#     - from_date (date): Start of the date range.
+#     - to_date (date): End of the date range.
+
+#     Returns:
+#     - list: A list of boolean values indicating whether each datetime object's date is in the range.
+#     """
+#     result = [from_date <= dt.date() <= to_date for dt in datetime_list]
+#     return result
