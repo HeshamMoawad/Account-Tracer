@@ -170,3 +170,4 @@ cython_debug/
 
 # images path 
 ./Backend/projects-images/*
+Backend/projects-images/opentw.jpg
