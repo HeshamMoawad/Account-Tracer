@@ -166,3 +166,7 @@ cython_debug/
 .png
 .svg
 .webp
+
+
+# images path 
+./Backend/projects-images/*
