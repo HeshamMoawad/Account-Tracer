@@ -1,12 +1,16 @@
 from django.urls import path ,include
 from .views import (
-    checkExistAccountFViews ,
+    checkExistAccountFBViews ,
     testLogin ,
+    ProjectListView ,
+    AgentListView ,
     )
 
 
 urlpatterns = [
-    path('checkExistAccountFViews',checkExistAccountFViews) ,
-    path('testlogin',testLogin)
+    path('api/checkExistAccountFBViews',checkExistAccountFBViews) ,
+    path('api/testlogin',testLogin),
+    path("api/projects" , ProjectListView.as_view()) ,
+    path("api/agents" , AgentListView.as_view()) ,
 ] 
 
