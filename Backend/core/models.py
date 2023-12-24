@@ -1,14 +1,15 @@
 from requests import  Session , Response
 from .constants import (
     HEADERS ,
+    ADD_ENTRY_TYPE
 )
 from .utils import CookiesParser
-from easydict import EasyDict
 from .types import (
         HttpResponseTypes , 
         HttpStatusCodeTypes ,
     )
-import typing
+import typing , traceback , datetime
+
 
 
 class TwitterAbastractResponse(Response):
@@ -76,8 +77,8 @@ class TwitterAbastractResponse(Response):
     def filterBOMchar(self)->str:
         return self.text.lstrip('\ufeff')
 
-    def json(self)->EasyDict:
-        return EasyDict(super().json())
+    # def json(self)->EasyDict:
+    #     return EasyDict(super().json())
 
 
 
@@ -92,7 +93,7 @@ class TwitterAbstractSession(Session):
         self.headers.update({"cookie":self.cookies_str})
         self.headers.update({"x-csrf-token":self.parser.token})
         self.headers.update({'referer': 'https://twitter.com/home'})
-        print(f"Headers : {self.headers}")
+        # print(f"Headers : {self.headers}")
 
 
     def get(self, url:str ,  params:dict=None , data=None , timeout:int=None , proxies:dict=None,  json:dict=None ) -> TwitterAbastractResponse:
@@ -129,6 +130,101 @@ class TwitterAbstractSession(Session):
 
 
 
+class AbstractParser(object):
+
+    @staticmethod
+    def createdAtParser(legacy:dict)-> datetime.datetime:
+        return datetime.datetime.strptime(legacy['created_at'], "%a %b %d %H:%M:%S %z %Y")
 
 
+    def getInstructionsFromResponse(self,data:dict)->list:
+        if "data" in data.keys(): data = data['data']
+        if data:
+            instructions = data['user']['result']['timeline_v2']['timeline']['instructions']
+            return instructions
+        else :
+            return None
 
+
+    def getEntriesFromInstractions(self,instructions:list) -> typing.Optional[list] :
+        instract = None
+        for inst in instructions :
+            if inst['type'] == ADD_ENTRY_TYPE :
+                instract = inst
+                break
+        return instract['entries']
+    
+
+    def getTweetsRepliesCursors(self,entries:typing.List[dict]) -> typing.Tuple[typing.List[dict],typing.List[dict],dict]:
+        tweets = []
+        replies = []
+        cursors = {'top':None , 'bottom':None}
+        for entry in entries:
+            if 'tweet' in entry['entryId']:
+                tweets.append(entry)
+            elif 'profile-conversation' in entry['entryId'] :
+                replies.append(entry)
+            elif 'cursor' in entry['entryId'] :
+                if 'cursor-top' in entry['entryId'] : cursors.update({"top":entry})
+                elif 'cursor-bottom' in entry['entryId'] : cursors.update({"bottom":entry})
+        return tweets , replies , cursors
+
+
+    def getLegacyFromTweets(self,tweets:typing.List[dict])->typing.List[dict]:
+        legacies = []
+        for tweet in tweets : 
+            try : 
+                legacy = tweet['content']['itemContent']['tweet_results']['result']['legacy']
+                legacies.append(legacy)
+            except Exception as e :
+                print(f"\n[-]\tError in : {e} \n==> {tweet}")
+                traceback.print_exc()
+        return legacies
+        
+
+    def getLegacyFromReplies(self,replies:typing.List[dict]):
+        legacies = []
+        for reply in replies : # content.items[1].item.itemContent.tweet_results.result.legacy
+            try :
+                legacy = reply['content']['items'][1]['item']['itemContent']['tweet_results']['result']['legacy']
+                legacies.append(legacy)
+            except Exception as e :
+                print(f"\n[-]\tError in : {e} \n==> {reply}")
+                traceback.print_exc()
+        return legacies
+
+
+    def getValueFromCursor(self,cursor:dict) -> str :
+        return cursor['content']['value']
+
+    def checkDateFromLegacy(self,legacy:dict,_from:datetime.datetime=None , _to:datetime.datetime=datetime.datetime.today()):
+        if not _from :  _from = _to
+        if legacy :
+            # print(_from,self.createdAtParser(legacy),_to)
+            return (_from.date() <= self.createdAtParser(legacy).date() <= _to.date())
+        else :
+            return False
+
+
+class TweetsParser(AbstractParser):
+
+    def __init__(self, data:dict = None ) -> None:
+        self.data = data
+        if data :
+            self.instructions = self.getInstructionsFromResponse(data)
+            self.entries = self.getEntriesFromInstractions(self.instructions)
+            self.__tweets , self.__replies , self.__cursors  = self.getTweetsRepliesCursors(self.entries)
+            self.bottomCursor = self.__cursors['bottom']
+            self.topCursor = self.__cursors['top']
+            self.tweets = self.getLegacyFromTweets(self.__tweets)
+            self.replies = self.getLegacyFromReplies(self.__replies)
+
+    def filterBetween(
+            self,
+            legaciesList:typing.List[dict],
+            _from:datetime.datetime=None ,
+            _to:datetime.datetime=datetime.datetime.today() ,
+                )->typing.List[dict]:
+
+        return list(filter(lambda x : self.checkDateFromLegacy(x,_from=_from,_to=_to) , legaciesList))
+        
