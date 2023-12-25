@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "./Card";
+import AccountCard from "./AccountCard";
 
 const CardContainer = (props) => {
   return (
@@ -8,7 +8,7 @@ const CardContainer = (props) => {
         <div className="row">
           {props.accounts ? (
             props.accounts.map((acc) => {
-              return <Card account={acc} key={Math.random()}/>;
+              return <AccountCard account={acc} key={Math.random()}/>;
             })
           ) : (
             <div className="alert alert-warning" role="alert">

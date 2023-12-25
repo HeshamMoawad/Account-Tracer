@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import "./AccountCard.css";
 
 const example = ()=>{return{
@@ -9,7 +9,7 @@ const example = ()=>{return{
   profileImgURL: "https://img.icons8.com/?size=256&id=32309&format=png",
 }};
 
-const Card = (props , key) => {
+const AccountCard = (props , key) => {
   const account = props.account
   return (
     <>
@@ -47,4 +47,4 @@ const Card = (props , key) => {
 };
 
 export { example };
-export default Card;
+export default AccountCard;
