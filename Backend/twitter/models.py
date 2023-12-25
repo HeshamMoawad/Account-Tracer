@@ -22,7 +22,7 @@ class Project(models.Model):
 
 
 class Agent(models.Model):
-    name = models.CharField(verbose_name="Name", max_length=50, unique=True)
+    name = models.CharField(verbose_name="Name", max_length=50)
     project = models.ForeignKey(Project , on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True )
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
@@ -44,7 +44,7 @@ class TwitterAccount(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True, )
 
     def __str__(self) -> str:
-        return f"{self.handle} - Created at {self.created_datetime}"
+        return f"{self.handle} - Created at {self.created_datetime.date()}"
 
     class Meta:
         verbose_name = 'Twitter Account'
@@ -59,6 +59,7 @@ class AccountLoginInfo(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50)
     screen_name = models.CharField(verbose_name="Handle", max_length=50)
     description = models.TextField(verbose_name='Bio' ,max_length=300)
+    profileImgURL = models.CharField(verbose_name="ImgURL" , max_length=200)
     verified = models.BooleanField(verbose_name="Verified", default=False)
     cookies = models.CharField(verbose_name="Cookies", max_length=500)
     token = models.CharField(verbose_name="Token", max_length=300)
@@ -68,7 +69,7 @@ class AccountLoginInfo(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.name} - Created at {self.created_datetime}"
+        return f"{self.name} - Created at {self.created_datetime.date()}"
 
     class Meta:
         verbose_name = 'Account Login Info'
