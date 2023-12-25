@@ -52,7 +52,6 @@ class TwitterAccount(models.Model):
 
 
 
-
 class AccountLoginInfo(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
     id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
@@ -78,6 +77,7 @@ class AccountLoginInfo(models.Model):
 
 
 class Tweet(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
     conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
@@ -94,3 +94,13 @@ class Tweet(models.Model):
         verbose_name_plural = 'Tweets'
 
 
+
+class Chat(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    conversation_id = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    sort_timestamp = models.DateTimeField(verbose_name="Chat Date & Time")
+    status = models.CharField(verbose_name="Status", max_length=50, unique=True)
+    
+    class Meta:
+        verbose_name = 'Chat'
+        verbose_name_plural = 'Chat'
