@@ -10,9 +10,9 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
 from .models import Project , Agent 
 from .serializer import ProjectSerializer , AgentSerializer
-from .TWlogin import LoginUsingBrowser
-from core.session import TwitterSession
-import datetime
+# from .TWlogin import LoginUsingBrowser
+# from core.session import TwitterSession
+# import datetime
 # Create your views here.
 
 
@@ -51,16 +51,16 @@ def checkExistAccountFBViews(request:Request):
 
 
 
-@api_view(["POST"])
-def testLogin(request:Request):
-    login = request.data.copy()
-    print(login)
-    if login :
-        s = TwitterSession(login.get("cookie",""))
-        me = s.getMe()
-        print(me)
-        tt = s.getMyTweets(_from=datetime.datetime(2023,11,14))
-        return Response({'length':len(tt),'data':tt}) 
-    else :
-        return Response({},status=HTTP_424_FAILED_DEPENDENCY)
+# @api_view(["POST"])
+# def testLogin(request:Request):
+#     login = request.data.copy()
+#     print(login)
+#     if login :
+#         s = TwitterSession(login.get("cookie",""))
+#         me = s.getMe()
+#         print(me)
+#         tt = s.getMyTweets(_from=datetime.datetime(2023,11,14))
+#         return Response({'length':len(tt),'data':tt}) 
+#     else :
+#         return Response({},status=HTTP_424_FAILED_DEPENDENCY)
 
