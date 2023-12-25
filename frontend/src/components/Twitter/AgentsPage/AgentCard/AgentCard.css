@@ -1,8 +1,11 @@
 #card{
-    margin-top: 8%;
+    margin-top: 50px;
+
 
 }
 
 
-
-
+#card-container:hover{
+    padding-left: 10px;
+    padding-bottom: 15px;
+}
