@@ -4,4 +4,14 @@ const TWITTER_GET_ACCOUNTS_URL = BASE_URL + "twitter/api/getAccounts";
 
 const Testing = BASE_URL + "twitter/api/checkExistAccountFViews";
 
-export { BASE_URL, TWITTER_GET_ACCOUNTS_URL, Testing };
+const ProjectsURL = BASE_URL + "twitter/api/projects";
+
+const AgentsURL = BASE_URL + "twitter/api/agents";
+
+export { 
+    BASE_URL, 
+    TWITTER_GET_ACCOUNTS_URL, 
+    Testing ,
+    ProjectsURL ,
+    AgentsURL ,
+};
