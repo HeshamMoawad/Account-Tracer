@@ -7,7 +7,7 @@ from colorfield.fields import ColorField
 
 class Project(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50, unique=True)
-    imgURL = models.ImageField( upload_to='projects-images/', max_length=None , null=True)
+    imgURL = models.ImageField( upload_to='./twitter/projects-images/', max_length=None , null=True)
     color = ColorField(verbose_name='Color')
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
