@@ -162,10 +162,10 @@ cython_debug/
 
 
 # images
-.jpg
-.png
-.svg
-.webp
+*.jpg
+*.png
+*.svg
+*.webp
 
 
 # images path 
