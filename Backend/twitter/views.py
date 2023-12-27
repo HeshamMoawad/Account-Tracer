@@ -22,9 +22,24 @@ class ProjectListView(ListAPIView):
     serializer_class = ProjectSerializer
 
 
+
 class AgentListView(ListAPIView):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
+
+    def get(self,request:Request , *args , **kwargs):
+        _filter = request.query_params.getlist("filter",None)
+        if _filter :
+            _filter = [arg for arg in _filter[0].split(",")]
+            projects = Project.objects.filter(name__in=_filter).all()
+            self.queryset = Agent.objects.filter(project__in=projects)
+            return self.list(request ,*args,**kwargs)
+        else :
+            if isinstance(_filter,type(None)):
+                return self.list(request ,*args,**kwargs)
+            else :
+                self.queryset = []
+                return self.list(request ,*args,**kwargs)
 
 
 
@@ -48,19 +63,4 @@ def checkExistAccountFBViews(request:Request):
             {"error":'"agentName" argument not found in request'} ,
             status = HTTP_400_BAD_REQUEST
             )
-
-
-
-# @api_view(["POST"])
-# def testLogin(request:Request):
-#     login = request.data.copy()
-#     print(login)
-#     if login :
-#         s = TwitterSession(login.get("cookie",""))
-#         me = s.getMe()
-#         print(me)
-#         tt = s.getMyTweets(_from=datetime.datetime(2023,11,14))
-#         return Response({'length':len(tt),'data':tt}) 
-#     else :
-#         return Response({},status=HTTP_424_FAILED_DEPENDENCY)
 
