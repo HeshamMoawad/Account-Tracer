@@ -7,10 +7,6 @@ const LoadingCardContainer = () => {
             <div className="row g-0">
                 <div className="col-md-4 mt-2 placeholder-glow">
                 <span className="placeholder col-12" id='img-loading'></span>
-                {/* <span className="placeholder col-12"></span>
-                <span className="placeholder col-12"></span>
-                <span className="placeholder col-12"></span>
-                <span className="placeholder col-12"></span> */}
                 </div>
                 <div className="col-md-8">
                 <div className="card-body">
@@ -24,9 +20,6 @@ const LoadingCardContainer = () => {
                         <button type="button" className="btn btn-primary disabled placeholder">
                             ...
                         </button>
-                    <button type="button" className="btn btn-danger disabled placeholder">
-                        ...
-                    </button>
                     </div>
                 </div>
                 </div>

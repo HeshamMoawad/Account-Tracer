@@ -1,20 +1,19 @@
 import React from "react";
 import "./AccountCard.css";
+import { useNavigate } from "react-router-dom";
 
-const example = ()=>{return{
-  id: `${Math.random()}`,
-  name: "name",
-  handle: "handle",
-  descreption: "descreption",
-  profileImgURL: "https://img.icons8.com/?size=256&id=32309&format=png",
-}};
-
-const AccountCard = (props , key) => {
+const AccountCard = (props) => {
   const account = props.account
+  const navigate = useNavigate();
+
+  const onClickHandler = ()=>{
+    navigate(`/twitter/analytics/${account.account.handle}`)
+  }
+
   return (
     <>
       {account ? ( 
-        <div className="card mb-3 mx-auto shadow-lg" style={{ maxWidth: 540 }} id="cardlayer" key={key} >
+        <div className="card mb-3 mx-auto shadow-lg" style={{ maxWidth: 540 }} id="cardlayer">
           <div className="row g-0" >
             <div className="col-md-4">
               <img
@@ -26,15 +25,12 @@ const AccountCard = (props , key) => {
             <div className="col-md-8">
               <div className="card-body">
                 <h5 className="card-title">
-                  {account.name ? account.name : 'Not Found'} - {account.handle ? account.handle :'Not Found'}
+                  {account.name ? account.name : 'Not Found'} - {account.account.handle ? account.account.handle :'Not Found'}
                 </h5>
-                <p className="card-text">{account.descreption ? account.descreption : 'Not Found'}</p>
+                <p className="card-text">{account.description ? account.description : 'Not Found'}</p>
                 <div className="btn-group" role="group" aria-label="Basic example">
-                  <button type="button" className="btn btn-primary" >
+                  <button type="button" className="btn btn-primary" onClick={onClickHandler} >
                     View Analytics
-                  </button>
-                  <button type="button" className="btn btn-danger" >
-                    Delete
                   </button>
                 </div>
               </div>
@@ -46,5 +42,5 @@ const AccountCard = (props , key) => {
   );
 };
 
-export { example };
+// export { example };
 export default AccountCard;
