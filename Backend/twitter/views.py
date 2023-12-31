@@ -8,8 +8,9 @@ from rest_framework.status import (
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
-from .models import Project , Agent 
-from .serializer import ProjectSerializer , AgentSerializer
+from .models import Project , Agent , AccountLoginInfo , TwitterAccount , models
+from .serializer import ProjectSerializer , AgentSerializer , AccountLoginInfoSerializer
+from django.core.exceptions import ObjectDoesNotExist
 # from .TWlogin import LoginUsingBrowser
 # from core.session import TwitterSession
 # import datetime
@@ -42,13 +43,37 @@ class AgentListView(ListAPIView):
                 return self.list(request ,*args,**kwargs)
 
 
+class AccountLoginInfoListView(ListAPIView):
+    queryset = AccountLoginInfo.objects.all()
+    serializer_class = AccountLoginInfoSerializer
 
-@api_view(["POST"])
+    def get(self , request:Request , *args , **kwargs):
+        _project = request.query_params.get('project',None)
+        _agent = request.query_params.get('agent',None)
+        if _project and _agent :
+            try : 
+                project = Project.objects.get(name = _project)
+                agent = Agent.objects.get(name = _agent , project = project)
+                twitter_accounts = TwitterAccount.objects.filter(agent = agent).all()
+                self.queryset = AccountLoginInfo.objects.filter(account__in=twitter_accounts).all()
+            except ObjectDoesNotExist:
+                self.queryset = []
+            return self.list(request ,*args,**kwargs)
+        else :
+            self.queryset = []
+            return self.list(request ,*args,**kwargs)
+        
+
+
+@api_view(["GET"])
 def checkExistAccountFBViews(request:Request):
-    agentName = request.data.get('agentName','')
-    if agentName :
+    agentName = request.query_params.get('agentName','')
+    project_name = request.query_params.get('project','')
+    # print(request.query_params , "\n" ,agentName , "\n" + project_name )
+    if agentName and project_name:
         try : 
-            agent = Agent.objects.get(name=agentName)
+            project = Project.objects.get(name = project_name)
+            agent = Agent.objects.get(name = agentName , project = project)
             return Response(
                 AgentSerializer(agent).data ,
                 status= HTTP_200_OK
