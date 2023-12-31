@@ -12,3 +12,8 @@ button{
 #cardlayer:hover{
     padding-left: 10px;
 }
+
+img#account-img{
+    border-radius: 50%;
+    padding: 10px;
+}
