@@ -28,7 +28,7 @@ class Agent(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return f"{self.name} - {self.project}"
 
     class Meta:
         verbose_name = 'Agent'
@@ -57,7 +57,7 @@ class AccountLoginInfo(models.Model):
     id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
     rest_id = models.CharField(verbose_name="Rest ID", max_length=50)
     name = models.CharField(verbose_name="Name", max_length=50)
-    screen_name = models.CharField(verbose_name="Handle", max_length=50)
+    screen_name = models.CharField(verbose_name="Screen Name", max_length=50)
     description = models.TextField(verbose_name='Bio' ,max_length=300)
     profileImgURL = models.CharField(verbose_name="ImgURL" , max_length=200)
     verified = models.BooleanField(verbose_name="Verified", default=False)
@@ -105,3 +105,14 @@ class Chat(models.Model):
     class Meta:
         verbose_name = 'Chat'
         verbose_name_plural = 'Chat'
+
+class FollowUnFollow(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    followers = models.IntegerField(verbose_name="Followers Count")
+    followeing = models.IntegerField(verbose_name="Following Count")
+
+    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+    class Meta:
+        verbose_name = 'Follower & Following Count'
+        verbose_name_plural = 'Follower & Following Counts'
