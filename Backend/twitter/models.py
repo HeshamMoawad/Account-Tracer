@@ -37,7 +37,7 @@ class Agent(models.Model):
 
 
 class TwitterAccount(models.Model):
-    handle = models.CharField(verbose_name="Handle", max_length=50)
+    handle = models.CharField(verbose_name="Handle", max_length=50 , unique=True)
     password = models.CharField(verbose_name="Password", max_length=50)
     agent = models.ForeignKey(Agent , on_delete=models.CASCADE)
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
@@ -54,10 +54,9 @@ class TwitterAccount(models.Model):
 
 class AccountLoginInfo(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
-    id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
     rest_id = models.CharField(verbose_name="Rest ID", max_length=50)
     name = models.CharField(verbose_name="Name", max_length=50)
-    screen_name = models.CharField(verbose_name="Screen Name", max_length=50)
+    screen_name = models.CharField(verbose_name="Screen Name", max_length=50 , unique=True)
     description = models.TextField(verbose_name='Bio' ,max_length=300)
     profileImgURL = models.CharField(verbose_name="ImgURL" , max_length=200)
     verified = models.BooleanField(verbose_name="Verified", default=False)
@@ -69,7 +68,7 @@ class AccountLoginInfo(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.name} - Created at {self.created_datetime.date()}"
+        return f"{self.name} - {self.screen_name} - Created at {self.created_datetime.date()}"
 
     class Meta:
         verbose_name = 'Account Login Info'
@@ -89,11 +88,34 @@ class Tweet(models.Model):
     created_at = models.CharField(verbose_name="Created At", max_length=60)
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+    
+    def __str__(self) -> str:
+        return f"{self.account} - {self.conversation_id_str}"
 
     class Meta:
         verbose_name = 'Tweet'
         verbose_name_plural = 'Tweets'
 
+class Reply(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    favorite_count = models.IntegerField(verbose_name="Likes Count")
+    reply_count = models.IntegerField(verbose_name="Replies Count")
+    retweet_count = models.IntegerField(verbose_name="Retweet Count")
+    user_id_str = models.CharField(verbose_name="ID", max_length=50)
+    bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
+    full_text = models.TextField(verbose_name="Body")
+    in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50)
+    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.account} - {self.conversation_id_str}"
+
+    class Meta:
+        verbose_name = 'Reply'
+        verbose_name_plural = 'Replies'
 
 
 class Chat(models.Model):
@@ -101,18 +123,27 @@ class Chat(models.Model):
     conversation_id = models.CharField(verbose_name="ID", max_length=50, unique=True)
     sort_timestamp = models.DateTimeField(verbose_name="Chat Date & Time")
     status = models.CharField(verbose_name="Status", max_length=50, unique=True)
-    
+
+    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.conversation_id} - {self.status}"
+
     class Meta:
         verbose_name = 'Chat'
-        verbose_name_plural = 'Chat'
+        verbose_name_plural = 'Chats'
 
 class FollowUnFollow(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
     followers = models.IntegerField(verbose_name="Followers Count")
-    followeing = models.IntegerField(verbose_name="Following Count")
+    following = models.IntegerField(verbose_name="Following Count")
 
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.account}  =>  {self.followers} -- {self.following}"
     class Meta:
         verbose_name = 'Follower & Following Count'
         verbose_name_plural = 'Follower & Following Counts'
