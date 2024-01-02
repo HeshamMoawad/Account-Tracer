@@ -1,0 +1,16 @@
+img#account-img-as-logo{
+    min-width: 11vw;
+    max-width: 15vw;
+    min-height: 11vw;
+    max-height: 15vw;
+    border-radius: 50%;
+}
+#handle{
+    color: rgb(83, 100, 113);
+    margin-bottom: 30px;
+}
+
+#analytics-container{
+    border-top: 1px solid gray;
+    margin-bottom: 80px;
+}

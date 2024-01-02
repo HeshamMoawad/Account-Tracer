@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import LineInfo from "./LineInfo/LineInfo";
-
-import logo from "../../../assets/facebook.png";
+import "./AnalyticsPage.css";
+// import logo from "../../../assets/facebook.png";
 
 const AnalyticsPage = () => {
     const { handle } = useParams();
-    const [isExist, setIsExist] = useState(false);
+    const [account, setAccount] = useState({
+        name : "Test",
+        handle : "@test" ,
+        profileImgURL : "https://pbs.twimg.com/profile_images/1676507105057021953/_Q05LEcB_400x400.jpg" ,
+        follow : 0 ,
+        unfollow : 0 ,
+        tweets : 0 ,
+        replies : 0 ,
+        messages : 0 ,
+    });
 
     // for chack exist handle
     useEffect(() => {
@@ -27,52 +36,65 @@ const AnalyticsPage = () => {
                 >
                     <div className="card-body">
                         <div className="container text-center">
-                            {isExist ? (
-                                <img className="img-fluid" src={logo} alt="" />
-                            ) : null}
-                            <h1 className="card-title h1">
-                                {isExist ? handle : "Not Found " + handle}
-                            </h1>
-                            <br />
+                            {account ? (
+                                <>
+                                    <img
+                                        className="img-fluid"
+                                        src={account.profileImgURL}
+                                        alt=""
+                                        id="account-img-as-logo"
+                                    />
+                                    <h1 className="card-title h1" id="name">
+                                        {account.name}
+                                    </h1>
+                                    <h2 className="card-title h3" id="handle">
+                                        {account.handle}
+                                    </h2>
+                                </>
+                            ) : (
+                                <h2 className="card-title h3" id="handle">
+                                    Not Found {handle}
+                                </h2>
+                            )}
                         </div>
-                        <div className="container">
-                            <LineInfo
-                                title="Tweets"
-                                value={null}
-                                hasButton={true}
-                                key={Math.random()}
-                            />
-                            <LineInfo
-                                title="Replies"
-                                value={null}
-                                hasButton={true}
-                                key={Math.random()}
-                            />
-                            <LineInfo
-                                title="Follow"
-                                value={null}
-                                key={Math.random()}
-                            />
-                            <LineInfo
-                                title="UnFollow"
-                                value={null}
-                                key={Math.random()}
-                            />
-                            <LineInfo
-                                title="Messages"
-                                value={null}
-                                key={Math.random()}
-                            />
-                            <LineInfo
-                                title="Tweets & Replies"
-                                value={null}
-                                key={Math.random()}
-                            />
-                        </div>
-
-                        {/* <div className="container text-center">
-              <button className="btn btn-secondary">Refresh</button>
-            </div> */}
+                        {account ? (
+                            <div className="container" id="analytics-container">
+                                <LineInfo
+                                    title="Tweets"
+                                    value={account.tweets}
+                                    hasButton={true}
+                                    target = {account.handle}
+                                    key={Math.random()}
+                                />
+                                <LineInfo
+                                    title="Replies"
+                                    value={account.replies}
+                                    hasButton={true}
+                                    target = {account.handle}
+                                    key={Math.random()}
+                                />
+                                <LineInfo
+                                    title="Follow"
+                                    value={account.follow}
+                                    key={Math.random()}
+                                />
+                                <LineInfo
+                                    title="UnFollow"
+                                    value={account.unfollow}
+                                    key={Math.random()}
+                                />
+                                <LineInfo
+                                    title="Messages"
+                                    value={account.messages}
+                                    key={Math.random()}
+                                />
+                                <LineInfo
+                                    title="Tweets & Replies"
+                                    value={account.follow + account.unfollow}
+                                    key={Math.random()}
+                                />
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </div>
