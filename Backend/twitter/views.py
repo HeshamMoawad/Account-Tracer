@@ -8,9 +8,20 @@ from rest_framework.status import (
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
-from .models import Project , Agent , AccountLoginInfo , TwitterAccount , models
-from .serializer import ProjectSerializer , AgentSerializer , AccountLoginInfoSerializer
+from .models import (
+    Project , 
+    Agent , 
+    AccountLoginInfo , 
+    TwitterAccount ,
+     )
+from .serializer import (
+    ProjectSerializer , 
+    AgentSerializer , 
+    AccountLoginInfoSerializer,
+    AnalyticsSerializer ,
+    )
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
 # from .TWlogin import LoginUsingBrowser
 # from core.session import TwitterSession
 # import datetime
@@ -89,3 +100,39 @@ def checkExistAccountFBViews(request:Request):
             status = HTTP_400_BAD_REQUEST
             )
 
+
+@api_view(["GET"])
+def getAnalyticsFBViews(request:Request):
+    handle = request.query_params.get("handle",None)
+    if handle :
+        accounts = TwitterAccount.objects.filter(handle=handle)
+        if accounts :
+            account = accounts[0]
+            print(account)
+            logininfo = AccountLoginInfo.objects.get(account=account)
+            print(logininfo)
+            
+
+            analytics_serializer = AnalyticsSerializer(instance = logininfo)
+            analytics_serializer.set_conditions(created_datetime__date = datetime.now().date())
+            # print(analytics_serializer.data)
+            # if analytics_serializer.is_valid():
+            return Response(
+                analytics_serializer.data 
+            )
+            # else :
+            #     print(analytics_serializer._errors)
+            #     return Response(
+            #         analytics_serializer.error_messages,
+            #         status = 200
+            #     )
+        else :
+            return Response(
+                {} ,
+                status = HTTP_404_NOT_FOUND
+            )
+    else :
+        return Response(
+            {"error":'"handle" param not found in request'} ,
+            status = HTTP_400_BAD_REQUEST
+        )
