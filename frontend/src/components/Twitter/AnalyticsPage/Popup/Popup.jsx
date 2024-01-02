@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Popup = (props) => {
-    const { name } = props;
+    const { name , target } = props;
     const [isShowed, setIsShowed] = useState(false);
     const [legacies, setLegacies] = useState(null);
 
@@ -10,6 +10,8 @@ const Popup = (props) => {
     // set legacies from endpoint
     useEffect(() => {
         // endpoint here
+        
+
     });
 
     return (
@@ -39,7 +41,7 @@ const Popup = (props) => {
                         aria-labelledby="offcanvasWithBothOptionsLabel"
                         aria-modal="true"
                         role="dialog"
-                        style={{ minWidth: "600px" }}
+                        style={{ minWidth: "35vw" }}
                     >
                         <div
                             className="offcanvas-header text-center"
