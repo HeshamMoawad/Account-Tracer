@@ -41,7 +41,6 @@ class AccountLoginInfoSerializer(ModelSerializer):
     class Meta:
         model = AccountLoginInfo
         fields = [
-            'id_str',
             'name',
             'description',
             'profileImgURL',
@@ -63,6 +62,7 @@ class AnalyticsSerializer(ModelSerializer):
     messages = SerializerMethodField()
     tweets = SerializerMethodField()
     replies = SerializerMethodField()
+    
 
     def get_handle(self, obj: AccountLoginInfo) -> str:
         return obj.screen_name
@@ -81,10 +81,11 @@ class AnalyticsSerializer(ModelSerializer):
                 "unfollow": followUnfollowObjects[0].followers - followUnfollowObjects.last().followers ,
                 "followback": followUnfollowObjects.last().followers - followUnfollowObjects[0].followers ,
             }
-        except IndexError:
+        except (IndexError , AttributeError) :
             return {
                 "follow": 0,
-                "unfollow": 0
+                "unfollow": 0,
+                "followback": 0 ,
             }
 
     def get_messages(self, obj: AccountLoginInfo):
@@ -106,8 +107,9 @@ class AnalyticsSerializer(ModelSerializer):
         ).count()
 
     def set_conditions(self,**kwargs):
-        """ func to handling date of this analytics 
-            to get more spacific resault can pass a kwargs for __init__ and model will pass them to resaults 
+        """ 
+        func to handling date of this analytics 
+        to get more spacific resault can pass a kwargs for __init__ and model will pass them to resaults 
 
             Example :
             >>> serializer = AnalyticsSerializer(instance)
@@ -116,6 +118,7 @@ class AnalyticsSerializer(ModelSerializer):
                         datetime(1,12,2023), # start  date
                         datetime(30,12,2023), # end  date
                         ))
+            >>> serializer.data
                 # that will return all data in this range of date 
          """
         self.params_as_kwargs = kwargs

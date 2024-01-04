@@ -101,31 +101,21 @@ def checkExistAccountFBViews(request:Request):
             )
 
 
-@api_view(["GET"])
-def getAnalyticsFBViews(request:Request):
-    handle = request.query_params.get("handle",None)
+@api_view(["POST"])
+def analyticsFBViews(request:Request):
+    handle = request.data.get("handle",None)
+    date = request.data.get("date",None)
     if handle :
-        accounts = TwitterAccount.objects.filter(handle=handle)
-        if accounts :
-            account = accounts[0]
-            print(account)
+        account = TwitterAccount.objects.filter(handle=handle).first()
+        if account :
             logininfo = AccountLoginInfo.objects.get(account=account)
-            print(logininfo)
-            
-
             analytics_serializer = AnalyticsSerializer(instance = logininfo)
-            analytics_serializer.set_conditions(created_datetime__date = datetime.now().date())
-            # print(analytics_serializer.data)
-            # if analytics_serializer.is_valid():
+            if date :
+                date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+                analytics_serializer.set_conditions(created_datetime__date = date)
             return Response(
                 analytics_serializer.data 
             )
-            # else :
-            #     print(analytics_serializer._errors)
-            #     return Response(
-            #         analytics_serializer.error_messages,
-            #         status = 200
-            #     )
         else :
             return Response(
                 {} ,
@@ -136,3 +126,26 @@ def getAnalyticsFBViews(request:Request):
             {"error":'"handle" param not found in request'} ,
             status = HTTP_400_BAD_REQUEST
         )
+
+
+@api_view(["GET"])
+def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in production
+    handle = request.query_params.get("handle",None)
+    try :
+        account = AccountLoginInfo.objects.get(screen_name = handle)
+        return Response(
+            {
+                "name" : account.name,
+                "handle" : account.screen_name ,
+                "profileImgURL" : account.profileImgURL ,
+                "minDate" : account.created_datetime ,
+                # "maxDate" : account.updated_datetime
+            } ,
+        )
+    except AccountLoginInfo.DoesNotExist :
+        return Response(
+            {} ,
+            status = HTTP_404_NOT_FOUND
+        )
+    
+

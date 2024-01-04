@@ -4,7 +4,6 @@ from colorfield.fields import ColorField
 
 
 
-
 class Project(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50, unique=True)
     imgURL = models.ImageField( upload_to='./twitter/projects-images/', max_length=None , null=True)
@@ -58,12 +57,13 @@ class AccountLoginInfo(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50)
     screen_name = models.CharField(verbose_name="Screen Name", max_length=50 , unique=True)
     description = models.TextField(verbose_name='Bio' ,max_length=300)
-    profileImgURL = models.CharField(verbose_name="ImgURL" , max_length=200)
+    profileImgURL = models.URLField(verbose_name="ImgURL")
     verified = models.BooleanField(verbose_name="Verified", default=False)
     cookies = models.CharField(verbose_name="Cookies", max_length=500)
     token = models.CharField(verbose_name="Token", max_length=300)
     suspend = models.BooleanField(verbose_name="Suspension Status", default=False)
     created_at = models.CharField(verbose_name="Created At", max_length=60)
+    ## not add when define new instance
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
@@ -74,48 +74,6 @@ class AccountLoginInfo(models.Model):
         verbose_name = 'Account Login Info'
         verbose_name_plural = 'Accounts Login Info'
 
-
-
-class Tweet(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
-    favorite_count = models.IntegerField(verbose_name="Likes Count")
-    reply_count = models.IntegerField(verbose_name="Replies Count")
-    retweet_count = models.IntegerField(verbose_name="Retweet Count")
-    user_id_str = models.CharField(verbose_name="ID", max_length=50)
-    bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
-    full_text = models.TextField(verbose_name="Body")
-    created_at = models.CharField(verbose_name="Created At", max_length=60)
-    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
-    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
-    
-    def __str__(self) -> str:
-        return f"{self.account} - {self.conversation_id_str}"
-
-    class Meta:
-        verbose_name = 'Tweet'
-        verbose_name_plural = 'Tweets'
-
-class Reply(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
-    favorite_count = models.IntegerField(verbose_name="Likes Count")
-    reply_count = models.IntegerField(verbose_name="Replies Count")
-    retweet_count = models.IntegerField(verbose_name="Retweet Count")
-    user_id_str = models.CharField(verbose_name="ID", max_length=50)
-    bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
-    full_text = models.TextField(verbose_name="Body")
-    in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50)
-    created_at = models.CharField(verbose_name="Created At", max_length=60)
-    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
-    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
-
-    def __str__(self) -> str:
-        return f"{self.account} - {self.conversation_id_str}"
-
-    class Meta:
-        verbose_name = 'Reply'
-        verbose_name_plural = 'Replies'
 
 
 class Chat(models.Model):
@@ -147,3 +105,61 @@ class FollowUnFollow(models.Model):
     class Meta:
         verbose_name = 'Follower & Following Count'
         verbose_name_plural = 'Follower & Following Counts'
+
+
+class MediaLink(models.Model):
+    class Type(models.TextChoices):
+        VIDEO = 'video', 'Video'
+        IMAGE = 'image', 'Image'
+    url = models.URLField(verbose_name="Media URL")
+    type = models.CharField(
+        max_length= 20 ,
+        choices=Type.choices,
+        default= Type.IMAGE ,
+    )
+
+class Tweet(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    favorite_count = models.IntegerField(verbose_name="Likes Count")
+    reply_count = models.IntegerField(verbose_name="Replies Count")
+    retweet_count = models.IntegerField(verbose_name="Retweet Count")
+    user_id_str = models.CharField(verbose_name="ID", max_length=50)
+    bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
+    media_links = models.ManyToManyField(MediaLink , blank=True )
+    full_text = models.TextField(verbose_name="Body")
+    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+    
+    def __str__(self) -> str:
+        return f"{self.account} - {self.conversation_id_str}"
+
+    class Meta:
+        verbose_name = 'Tweet'
+        verbose_name_plural = 'Tweets'
+
+class Reply(models.Model):
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    favorite_count = models.IntegerField(verbose_name="Likes Count")
+    reply_count = models.IntegerField(verbose_name="Replies Count")
+    retweet_count = models.IntegerField(verbose_name="Retweet Count")
+    user_id_str = models.CharField(verbose_name="ID", max_length=50)
+    bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
+    media_links = models.ManyToManyField(MediaLink , blank=True  )
+    full_text = models.TextField(verbose_name="Body")
+    media_url = models.CharField(verbose_name="Media URL", max_length=200)
+    in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50)
+    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
+    updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.account} - {self.conversation_id_str}"
+
+    class Meta:
+        verbose_name = 'Reply'
+        verbose_name_plural = 'Replies'
+
+

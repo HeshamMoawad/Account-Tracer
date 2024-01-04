@@ -1,0 +1,72 @@
+{
+    "quoted_status_result": {
+        "result": {
+            "legacy": {
+                "bookmark_count": 0,
+                "bookmarked": false,
+                "created_at": "Mon Dec 04 10:14:27 +0000 2023",
+                "conversation_id_str": "1731617956419817529",
+                "entities": {
+                    "media": [
+                        {
+                            "display_url": "pic.twitter.com/tfDGSBymWP",
+                            "expanded_url": "https://twitter.com/EngFahdAdvisor/status/1731617956419817529/photo/1",
+                            "id_str": "1731617475458899968",
+                            "media_key": "3_1731617475458899968",
+                            "media_url_https": "https://pbs.twimg.com/media/GAfw61-WIAALRqp.png",
+                            "type": "photo",
+                            "url": "https://t.co/tfDGSBymWP"
+                        }
+                    ]
+                },
+                "favorite_count": 0,
+                "favorited": false,
+                "full_text": "#تاسى الهدف حسب استراتيجية الاخ الكريم \nباذن الله يواصل الصعود الى مستويات ال11397 و دعم المؤشر 11101 نقطة \nباذن الله يكمل صعود https://t.co/tfDGSBymWP",
+                "is_quote_status": true,
+                "lang": "ar",
+                "possibly_sensitive": false,
+                "possibly_sensitive_editable": true,
+                "quote_count": 1,
+                "quoted_status_id_str": "1730969995989983455",
+                "reply_count": 0,
+                "retweet_count": 0,
+                "retweeted": false,
+                "user_id_str": "1676505871419834368",
+                "id_str": "1731617956419817529"
+            }
+        }
+    },
+    "legacy": {
+        "bookmark_count": 0,
+        "bookmarked": false,
+        "created_at": "Mon Dec 11 09:12:34 +0000 2023",
+        "conversation_id_str": "1734139096845488603",
+        "entities": {
+            "media": [
+                {
+                    "display_url": "pic.twitter.com/WNBg4da9fn",
+                    "expanded_url": "https://twitter.com/EngFahdAdvisor/status/1734139096845488603/photo/1",
+                    "id_str": "1734138773850533888",
+                    "media_key": "3_1734138773850533888",
+                    "media_url_https": "https://pbs.twimg.com/media/GBDmBuaXsAA9PJO.png",
+                    "type": "photo",
+                    "url": "https://t.co/WNBg4da9fn"
+                }
+            ]
+        },
+        "favorite_count": 0,
+        "favorited": false,
+        "full_text": "استراتيجية جيدة و المؤشر فى الطريق للهدف \n#تاسي \n#السوق_السعودى\n#استراتيجيات https://t.co/WNBg4da9fn",
+        "is_quote_status": true,
+        "lang": "ar",
+        "possibly_sensitive": false,
+        "possibly_sensitive_editable": true,
+        "quote_count": 0,
+        "quoted_status_id_str": "1731617956419817529",
+        "reply_count": 0,
+        "retweet_count": 0,
+        "retweeted": false,
+        "user_id_str": "1676505871419834368",
+        "id_str": "1734139096845488603"
+    }
+}

@@ -12,7 +12,7 @@ from typing import (
 import logging 
 from core.utils import *
 
-logging.getLogger('seleniumwire').setLevel(logging.WARNING)
+# logging.getLogger('seleniumwire').setLevel(logging.WARNING)
 
 class LoginUsingBrowser(object):
     LOGINURL = "https://twitter.com/i/flow/login"
@@ -22,39 +22,38 @@ class LoginUsingBrowser(object):
     LOGINBUTTONXPATH = """//div[@role="button"]//div[@dir="ltr"]//span//span[text()="Log in"]""" 
     confirmLOGINXPATH = """//div[@role="presentation"]"""
     
-    def login(self , UserName,Password )-> Union[dict,None] :
+    def login(self , UserName,Password , logging_with_print:bool = False)-> Union[dict,None] :
         chrome_options = ChromeOptions()
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('--ignore-certificate-errors')
-        chrome_options.add_argument('--disable-logging')
-        print(chrome_options.arguments)
+        # chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--disable-gpu')
+        # chrome_options.add_argument('--ignore-certificate-errors')
+        # chrome_options.add_argument('--disable-logging')
+        print(chrome_options.arguments) if logging_with_print else None
         try :
             self.driver = webdriver.Chrome(options = chrome_options)
-            self.driver.minimize_window()
+            # self.driver.maximize_window()
+            # self.driver.minimize_window()
             self.driver.get('https://twitter.com/login')
-            print("browser opened")
-            self.wait_element(self.USERNAMEXPATH).send_keys(UserName)
-            print("send user")
-            self.wait_element(self.NEXTBUTTONXPATH).click()
-            print("click next")
-            self.wait_element(self.PASSWORDXPATH).send_keys(Password)
-            print("send pass")
-            self.wait_element(self.LOGINBUTTONXPATH).click()
-            print("click login")
-            self.wait_element(self.confirmLOGINXPATH)
-            print("confirm login")
+            print("browser opened")  if logging_with_print else None
+            self.wait_element(self.USERNAMEXPATH , timeout=100).send_keys(UserName)
+            print("send user")  if logging_with_print else None
+            self.wait_element(self.NEXTBUTTONXPATH , timeout=60).click()
+            print("click next")  if logging_with_print else None
+            self.wait_element(self.PASSWORDXPATH , timeout=60).send_keys(Password)
+            print("send pass")  if logging_with_print else None
+            self.wait_element(self.LOGINBUTTONXPATH , timeout=60).click()
+            print("click login") if logging_with_print else None
+            self.wait_element(self.confirmLOGINXPATH , timeout=60)
+            print("confirm login")  if logging_with_print else None
             self.driver.get(f"https://twitter.com/{UserName}")
-            print("get profile")
+            print("get profile")  if logging_with_print else None
             req = self.driver.wait_for_request("/UserByScreenName").headers
             cookies = req['cookie']
-            # cookies = self.driver.execute_script("return document.cookie;")
-            print(f"\n{req}\n")
             self.driver.quit()
             return dict( 
-                cookie = cookies,
+                cookie = cookies ,
                 username = UserName ,
-                password = Password 
+                password = Password ,
                 )
         except Exception as e :
             print(e)
