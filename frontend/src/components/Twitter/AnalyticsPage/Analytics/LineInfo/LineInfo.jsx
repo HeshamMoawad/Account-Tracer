@@ -1,5 +1,5 @@
 import React from 'react';
-import Popup from '../Popup/Popup';
+import Popup from '../../Popup/Popup';
 
 const LineInfo = (props) => {
     const { title , value , hasButton , target } = props

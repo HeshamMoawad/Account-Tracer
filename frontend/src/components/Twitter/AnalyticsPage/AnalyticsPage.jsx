@@ -1,34 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import LineInfo from "./LineInfo/LineInfo";
+import Calendar from "react-calendar";
+import Analytics from "./Analytics/Analytics";
+import axios from "axios";
+import {CheckExistHandleURL} from "../../../Constants";
+import "react-calendar/dist/Calendar.css";
 import "./AnalyticsPage.css";
-// import logo from "../../../assets/facebook.png";
+
 
 const AnalyticsPage = () => {
     const { handle } = useParams();
-    const [account, setAccount] = useState({
-        name : "Test",
-        handle : "@test" ,
-        profileImgURL : "https://pbs.twimg.com/profile_images/1676507105057021953/_Q05LEcB_400x400.jpg" ,
-        follow : 0 ,
-        unfollow : 0 ,
-        tweets : 0 ,
-        replies : 0 ,
-        messages : 0 ,
-    });
-
-    // for chack exist handle
-    useEffect(() => {
-        // endpoint here
-    });
+    const [fetchDate, setFetchDate] = useState(new Date());
+    const [currentSelectedDate, setCurrentSelectedDate] = useState(new Date());
+    const [userInfo, setUserInfo] = useState(null);
 
     // fetch account info
     useEffect(() => {
+        const params = new URLSearchParams({
+            handle : handle
+        })
         // endpoint here
-    });
+        axios  
+            .get(CheckExistHandleURL + `?${params}`)
+            .then(response => {setUserInfo(response.data);console.log(response)})
+            .catch(error => console.log(`Fetching Error ${error}`))
+    },[]);
 
     return (
-        <div className="container text-left ">
+        <div className="container text-left mt-5">
             <div className="row">
                 <div
                     className="card mx-auto shadow-lg"
@@ -36,65 +35,57 @@ const AnalyticsPage = () => {
                 >
                     <div className="card-body">
                         <div className="container text-center">
-                            {account ? (
-                                <>
-                                    <img
-                                        className="img-fluid"
-                                        src={account.profileImgURL}
-                                        alt=""
-                                        id="account-img-as-logo"
-                                    />
-                                    <h1 className="card-title h1" id="name">
-                                        {account.name}
-                                    </h1>
+                            <div className="row">
+                                {userInfo ? (
+                                    <>
+                                        <div className="col">
+                                            <img
+                                                className="img-fluid"
+                                                src={userInfo.profileImgURL}
+                                                alt=""
+                                                id="account-img-as-logo"
+                                            />
+                                            <h1
+                                                className="card-title h1"
+                                                id="name"
+                                            >
+                                                {userInfo.name}
+                                            </h1>
+                                            <h2
+                                                className="card-title h3"
+                                                id="handle"
+                                            >
+                                                {userInfo.handle}
+                                            </h2>
+                                        </div>
+
+                                        <div className="container col-3 mx-auto">
+                                            <Calendar
+                                                minDate={new Date(userInfo.minDate)}
+                                                maxDate={new Date(userInfo.maxDate)}
+                                                onClickDay={(v, e) => setCurrentSelectedDate(v)}
+                                            />
+                                            <div className="row">
+                                            <button className="btn btn-outline-primary mt-3 col" onClick={()=>setFetchDate(currentSelectedDate)}>
+                                                Fetch Data
+                                            </button>
+                                            <label className="h6 col mt-4 border border-secondary-subtle">
+                                                {currentSelectedDate.getDate()} / {currentSelectedDate.getMonth()+1} / {currentSelectedDate.getFullYear()}
+                                            </label></div>
+                                        </div>
+                                    </>
+                                ) : (
                                     <h2 className="card-title h3" id="handle">
-                                        {account.handle}
+                                        Not Found {handle}
                                     </h2>
-                                </>
-                            ) : (
-                                <h2 className="card-title h3" id="handle">
-                                    Not Found {handle}
-                                </h2>
-                            )}
-                        </div>
-                        {account ? (
-                            <div className="container" id="analytics-container">
-                                <LineInfo
-                                    title="Tweets"
-                                    value={account.tweets}
-                                    hasButton={true}
-                                    target = {account.handle}
-                                    key={Math.random()}
-                                />
-                                <LineInfo
-                                    title="Replies"
-                                    value={account.replies}
-                                    hasButton={true}
-                                    target = {account.handle}
-                                    key={Math.random()}
-                                />
-                                <LineInfo
-                                    title="Follow"
-                                    value={account.follow}
-                                    key={Math.random()}
-                                />
-                                <LineInfo
-                                    title="UnFollow"
-                                    value={account.unfollow}
-                                    key={Math.random()}
-                                />
-                                <LineInfo
-                                    title="Messages"
-                                    value={account.messages}
-                                    key={Math.random()}
-                                />
-                                <LineInfo
-                                    title="Tweets & Replies"
-                                    value={account.follow + account.unfollow}
-                                    key={Math.random()}
-                                />
+                                )}
                             </div>
-                        ) : null}
+                        </div>
+                        {
+                            userInfo ?
+                            <Analytics handle={userInfo.handle} fetchDate = {fetchDate} currentSelectedDate = {currentSelectedDate} /> :
+                            null
+                        }
                     </div>
                 </div>
             </div>

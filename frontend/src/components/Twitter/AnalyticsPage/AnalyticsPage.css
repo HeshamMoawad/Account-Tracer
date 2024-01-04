@@ -14,3 +14,9 @@ img#account-img-as-logo{
     border-top: 1px solid gray;
     margin-bottom: 80px;
 }
+.react-calendar{
+    border: none;
+    height: 80%;
+
+    /* background-color: red; */
+}

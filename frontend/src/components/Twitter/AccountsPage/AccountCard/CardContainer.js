@@ -2,11 +2,14 @@ import React from "react";
 import AccountCard from "./AccountCard";
 
 const CardContainer = (props) => {
+  console.log(props);
   return (
     <>
       <div className="container text-center">
         <div className="row">
+
           {props.accounts ? (
+            
             props.accounts.map((acc) => {
               return <AccountCard account={acc} key={Math.random()}/>;
             })

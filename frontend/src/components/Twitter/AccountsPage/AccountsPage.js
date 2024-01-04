@@ -39,7 +39,7 @@ const AccountsPage = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-        setData({});
+        setData(null);
       });
   }, []);
 
