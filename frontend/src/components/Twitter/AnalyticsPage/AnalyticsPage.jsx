@@ -17,7 +17,7 @@ const AnalyticsPage = () => {
     // fetch account info
     useEffect(() => {
         const params = new URLSearchParams({
-            handle : handle
+            handle : handle.replace("@","")
         })
         // endpoint here
         axios  

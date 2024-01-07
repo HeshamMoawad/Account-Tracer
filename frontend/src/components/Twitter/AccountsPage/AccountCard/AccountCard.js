@@ -18,7 +18,7 @@ const AccountCard = (props) => {
             <div className="col-md-4">
               <img
                 src={account.profileImgURL}
-                className="img-fluid"
+                // className="img-fluid"
                 alt=""
                 id="account-img"
               />
