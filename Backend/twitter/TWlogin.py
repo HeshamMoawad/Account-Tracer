@@ -24,10 +24,10 @@ class LoginUsingBrowser(object):
     
     def login(self , UserName,Password , logging_with_print:bool = False)-> Union[dict,None] :
         chrome_options = ChromeOptions()
-        # chrome_options.add_argument('--headless')
-        # chrome_options.add_argument('--disable-gpu')
-        # chrome_options.add_argument('--ignore-certificate-errors')
-        # chrome_options.add_argument('--disable-logging')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument('--disable-logging')
         print(chrome_options.arguments) if logging_with_print else None
         try :
             self.driver = webdriver.Chrome(options = chrome_options)
@@ -35,15 +35,18 @@ class LoginUsingBrowser(object):
             # self.driver.minimize_window()
             self.driver.get('https://twitter.com/login')
             print("browser opened")  if logging_with_print else None
+
+            # resault = self.driver.execute_script()
+
             self.wait_element(self.USERNAMEXPATH , timeout=100).send_keys(UserName)
             print("send user")  if logging_with_print else None
-            self.wait_element(self.NEXTBUTTONXPATH , timeout=60).click()
+            self.wait_element(self.NEXTBUTTONXPATH , timeout=30).click()
             print("click next")  if logging_with_print else None
-            self.wait_element(self.PASSWORDXPATH , timeout=60).send_keys(Password)
+            self.wait_element(self.PASSWORDXPATH , timeout=30).send_keys(Password)
             print("send pass")  if logging_with_print else None
-            self.wait_element(self.LOGINBUTTONXPATH , timeout=60).click()
+            self.wait_element(self.LOGINBUTTONXPATH , timeout=30).click()
             print("click login") if logging_with_print else None
-            self.wait_element(self.confirmLOGINXPATH , timeout=60)
+            self.wait_element(self.confirmLOGINXPATH , timeout=30)
             print("confirm login")  if logging_with_print else None
             self.driver.get(f"https://twitter.com/{UserName}")
             print("get profile")  if logging_with_print else None
@@ -69,7 +72,7 @@ class LoginUsingBrowser(object):
     def wait_element(self,val:str,by:str=By.XPATH,timeout:int=10)->WebElement:
         self.waiting = WebDriverWait(self.driver, timeout=timeout)
         arg = (by,val)
-        return self.waiting.until(EC.presence_of_element_located(arg))
+        return self.waiting.until(EC.visibility_of_element_located(arg))
 
 
 

@@ -36,7 +36,7 @@ class TwitterAbastractResponse(Response):
         elif isinstance(__o,Response) :
             return self.status_code == __o.status_code
         else :
-            raise TypeError(f"Cannot compare with object of type {type(__o)}. Expected NewResponse or Response object.")
+            raise TypeError(f"Cannot compare with object of type {type(__o)}. Expected TwitterAbastractResponse or Response object.")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(status_code={self.status_code},type={self.status_code_type},type_text={self.status_code_text})"

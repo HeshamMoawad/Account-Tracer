@@ -20,7 +20,13 @@ class TwitterSession(TwitterAbstractSession):
             'features': '{"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
         }
         response =  self.get( url = USERS_BY_REST_IDS_URL , params = params)
-        return response.json()
+        if response[response.StatusCodeTypes.OK]:
+            return response.json()
+        elif response[response.StatusCodeTypes.FORBIDDEN]:
+            return {}
+        else :
+            print(response)
+            return {}
 
 
     def getMyTweets(self,_from:datetime.datetime ,_to:datetime.datetime=datetime.datetime.today()):

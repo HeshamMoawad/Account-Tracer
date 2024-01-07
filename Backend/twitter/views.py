@@ -131,8 +131,10 @@ def analyticsFBViews(request:Request):
 @api_view(["GET"])
 def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in production
     handle = request.query_params.get("handle",None)
+    # print(handle)
     try :
         account = AccountLoginInfo.objects.get(screen_name = handle)
+        # print(account)
         return Response(
             {
                 "name" : account.name,
