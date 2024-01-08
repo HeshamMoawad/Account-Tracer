@@ -31,13 +31,8 @@ class LoginUsingBrowser(object):
         print(chrome_options.arguments) if logging_with_print else None
         try :
             self.driver = webdriver.Chrome(options = chrome_options)
-            # self.driver.maximize_window()
-            # self.driver.minimize_window()
             self.driver.get('https://twitter.com/login')
             print("browser opened")  if logging_with_print else None
-
-            # resault = self.driver.execute_script()
-
             self.wait_element(self.USERNAMEXPATH , timeout=100).send_keys(UserName)
             print("send user")  if logging_with_print else None
             self.wait_element(self.NEXTBUTTONXPATH , timeout=30).click()

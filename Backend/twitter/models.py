@@ -22,7 +22,7 @@ class Project(models.Model):
 
 class Agent(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50)
-    project = models.ForeignKey(Project , on_delete=models.CASCADE)
+    project = models.ForeignKey(Project , on_delete=models.SET_NULL , null=True )
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True )
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
@@ -38,7 +38,7 @@ class Agent(models.Model):
 class TwitterAccount(models.Model):
     handle = models.CharField(verbose_name="Handle", max_length=50 , unique=True)
     password = models.CharField(verbose_name="Password", max_length=50)
-    agent = models.ForeignKey(Agent , on_delete=models.CASCADE)
+    agent = models.ForeignKey(Agent , on_delete=models.SET_NULL , null=True )
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True, )
 
@@ -52,7 +52,7 @@ class TwitterAccount(models.Model):
 
 
 class AccountLoginInfo(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE , null=True )
     rest_id = models.CharField(verbose_name="Rest ID", max_length=50)
     name = models.CharField(verbose_name="Name", max_length=50)
     screen_name = models.CharField(verbose_name="Screen Name", max_length=50 , unique=True)
@@ -77,7 +77,7 @@ class AccountLoginInfo(models.Model):
 
 
 class Chat(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     conversation_id = models.CharField(verbose_name="ID", max_length=50, unique=True)
     sort_timestamp = models.DateTimeField(verbose_name="Chat Date & Time")
     status = models.CharField(verbose_name="Status", max_length=50, unique=True)
@@ -93,7 +93,7 @@ class Chat(models.Model):
         verbose_name_plural = 'Chats'
 
 class FollowUnFollow(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     followers = models.IntegerField(verbose_name="Followers Count")
     following = models.IntegerField(verbose_name="Following Count")
 
@@ -119,7 +119,7 @@ class MediaLink(models.Model):
     )
 
 class Tweet(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
@@ -140,7 +140,7 @@ class Tweet(models.Model):
         verbose_name_plural = 'Tweets'
 
 class Reply(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE)
+    account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")

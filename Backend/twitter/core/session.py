@@ -4,7 +4,7 @@ from .constants import (
     USER_TWEETS_AND_REPLIES_URL ,
     SUCCESS_STATUS_CODES
     )
-# from easydict import EasyDict
+
 import typing , datetime
 
 
@@ -40,7 +40,6 @@ class TwitterSession(TwitterAbstractSession):
             date = parser.createdAtParser(parser.tweets[-1])
             print( _from.date() ,date.date(),_to.date() ,date.date() >= _to.date())
             if (date.date() >= _from.date()):
-                # print(parser.createdAtParser(tweets[0]))
                 stop = True
                 break
         
@@ -66,6 +65,8 @@ class TwitterSession(TwitterAbstractSession):
         response = self.get(USER_TWEETS_AND_REPLIES_URL,params=params)
         if response.status_code in SUCCESS_STATUS_CODES:
             parser = TweetsParser(response.json())
-            return parser #parser.filterBetween(parser.tweets)
+            return parser 
         else :
             return None
+
+    
