@@ -43,7 +43,7 @@ class TwitterAccount(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True, )
 
     def __str__(self) -> str:
-        return f"{self.handle} - Created at {self.created_datetime.date()}"
+        return f"{self.handle} - {self.agent} - Created at {self.created_datetime.date()}"
 
     class Meta:
         verbose_name = 'Twitter Account'
@@ -62,7 +62,7 @@ class AccountLoginInfo(models.Model):
     cookies = models.CharField(verbose_name="Cookies", max_length=500)
     token = models.CharField(verbose_name="Token", max_length=300)
     suspend = models.BooleanField(verbose_name="Suspension Status", default=False)
-    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_at = models.DateTimeField(verbose_name="Created At")
     ## not add when define new instance
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
@@ -78,13 +78,13 @@ class AccountLoginInfo(models.Model):
 
 class Chat(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
-    conversation_id = models.CharField(verbose_name="ID", max_length=50, unique=True)
-    sort_timestamp = models.DateTimeField(verbose_name="Chat Date & Time")
-    status = models.CharField(verbose_name="Status", max_length=50, unique=True)
+    conversation_id = models.CharField(verbose_name="Conversation ID", max_length=50)
+    chat_datetime = models.DateTimeField(verbose_name="Chat Date & Time")
+    status = models.CharField(verbose_name="Status", max_length=50)
 
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
-
+    
     def __str__(self) -> str:
         return f"{self.conversation_id} - {self.status}"
 
@@ -120,20 +120,20 @@ class MediaLink(models.Model):
 
 class Tweet(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
     retweet_count = models.IntegerField(verbose_name="Retweet Count")
-    user_id_str = models.CharField(verbose_name="ID", max_length=50)
+    user_id_str = models.CharField(verbose_name="User ID", max_length=50)
     bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
     media_links = models.ManyToManyField(MediaLink , blank=True )
     full_text = models.TextField(verbose_name="Body")
-    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_at = models.DateTimeField(verbose_name="Created At")
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
     
     def __str__(self) -> str:
-        return f"{self.account} - {self.conversation_id_str}"
+        return f"{self.created_at} - {self.conversation_id_str}"
 
     class Meta:
         verbose_name = 'Tweet'
@@ -141,22 +141,22 @@ class Tweet(models.Model):
 
 class Reply(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50, unique=True)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
     retweet_count = models.IntegerField(verbose_name="Retweet Count")
-    user_id_str = models.CharField(verbose_name="ID", max_length=50)
+    user_id_str = models.CharField(verbose_name="User ID", max_length=50)
     bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
     media_links = models.ManyToManyField(MediaLink , blank=True  )
     full_text = models.TextField(verbose_name="Body")
     media_url = models.CharField(verbose_name="Media URL", max_length=200)
     in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50)
-    created_at = models.CharField(verbose_name="Created At", max_length=60)
+    created_at = models.DateTimeField(verbose_name="Created At")
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.account} - {self.conversation_id_str}"
+        return f"{self.created_at} - {self.conversation_id_str}"
 
     class Meta:
         verbose_name = 'Reply'

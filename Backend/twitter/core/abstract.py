@@ -1,15 +1,18 @@
 from requests import  Session , Response
+from .utils import CookiesParser
+from .types import (
+    HttpResponseTypes , 
+    HttpStatusCodeTypes ,
+    )
 from .constants import (
     HEADERS ,
     ADD_ENTRY_TYPE
 )
-from .utils import CookiesParser
-from .types import (
-        HttpResponseTypes , 
-        HttpStatusCodeTypes ,
+from .objects import (
+    ReplyObject ,
+    TweetObject
     )
 import typing , traceback , datetime
-
 
 
 class TwitterAbastractResponse(Response):
@@ -36,7 +39,7 @@ class TwitterAbastractResponse(Response):
         elif isinstance(__o,Response) :
             return self.status_code == __o.status_code
         else :
-            raise TypeError(f"Cannot compare with object of type {type(__o)}. Expected NewResponse or Response object.")
+            raise TypeError(f"Cannot compare with object of type {type(__o)}. Expected TwitterAbastractResponse or Response object.")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(status_code={self.status_code},type={self.status_code_type},type_text={self.status_code_text})"
@@ -76,11 +79,6 @@ class TwitterAbastractResponse(Response):
  
     def filterBOMchar(self)->str:
         return self.text.lstrip('\ufeff')
-
-    # def json(self)->EasyDict:
-    #     return EasyDict(super().json())
-
-
 
 
 class TwitterAbstractSession(Session): 
@@ -127,9 +125,6 @@ class TwitterAbstractSession(Session):
 
 
 
-
-
-
 class AbstractParser(object):
 
     @staticmethod
@@ -170,12 +165,13 @@ class AbstractParser(object):
         return tweets , replies , cursors
 
 
-    def getLegacyFromTweets(self,tweets:typing.List[dict])->typing.List[dict]:
+    def getLegacyFromTweets(self,tweets:typing.List[dict])-> typing.List[TweetObject]:
         legacies = []
         for tweet in tweets : 
             try : 
                 legacy = tweet['content']['itemContent']['tweet_results']['result']['legacy']
-                legacies.append(legacy)
+                quoted = tweet['content']['itemContent']['tweet_results']['result'].get('quoted_status_result',None)
+                legacies.append(TweetObject(legacy,quoted))
             except Exception as e :
                 print(f"\n[-]\tError in : {e} \n==> {tweet}")
                 traceback.print_exc()
@@ -184,10 +180,10 @@ class AbstractParser(object):
 
     def getLegacyFromReplies(self,replies:typing.List[dict]):
         legacies = []
-        for reply in replies : # content.items[1].item.itemContent.tweet_results.result.legacy
+        for reply in replies :
             try :
                 legacy = reply['content']['items'][1]['item']['itemContent']['tweet_results']['result']['legacy']
-                legacies.append(legacy)
+                legacies.append(ReplyObject(legacy))
             except Exception as e :
                 print(f"\n[-]\tError in : {e} \n==> {reply}")
                 traceback.print_exc()
@@ -200,31 +196,6 @@ class AbstractParser(object):
     def checkDateFromLegacy(self,legacy:dict,_from:datetime.datetime=None , _to:datetime.datetime=datetime.datetime.today()):
         if not _from :  _from = _to
         if legacy :
-            # print(_from,self.createdAtParser(legacy),_to)
             return (_from.date() <= self.createdAtParser(legacy).date() <= _to.date())
         else :
             return False
-
-
-class TweetsParser(AbstractParser):
-
-    def __init__(self, data:dict = None ) -> None:
-        self.data = data
-        if data :
-            self.instructions = self.getInstructionsFromResponse(data)
-            self.entries = self.getEntriesFromInstractions(self.instructions)
-            self.__tweets , self.__replies , self.__cursors  = self.getTweetsRepliesCursors(self.entries)
-            self.bottomCursor = self.__cursors['bottom']
-            self.topCursor = self.__cursors['top']
-            self.tweets = self.getLegacyFromTweets(self.__tweets)
-            self.replies = self.getLegacyFromReplies(self.__replies)
-
-    def filterBetween(
-            self,
-            legaciesList:typing.List[dict],
-            _from:datetime.datetime=None ,
-            _to:datetime.datetime=datetime.datetime.today() ,
-                )->typing.List[dict]:
-
-        return list(filter(lambda x : self.checkDateFromLegacy(x,_from=_from,_to=_to) , legaciesList))
-        

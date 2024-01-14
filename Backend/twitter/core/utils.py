@@ -1,7 +1,8 @@
 from urllib.parse import unquote
 from http.cookies import re, SimpleCookie
 from .constants import TOKEN_IDENTIFIRE , USERID_IDENTIFIRE
-from datetime import datetime
+
+
 
 class CookiesParser(object):
     def __init__(self,cookies) -> None:
@@ -17,6 +18,11 @@ class CookiesParser(object):
         return unquote(self.cookies_as_dict[USERID_IDENTIFIRE]).split("=")[-1]
 
 
+# def save(model,obj):
+#     instance = model.objects.create(
+#         **obj.data
+#     )
+#     instance.save()
 
 # def check_date_range(datetime_list, from_date, to_date):
 #     """

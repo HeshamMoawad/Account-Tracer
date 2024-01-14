@@ -6,6 +6,7 @@ from .views import (
     analyticsFBViews ,
     checkExistHandleFBViews,
     checkExistAccountFBViews ,
+    testing
     )
 
 
@@ -17,5 +18,6 @@ urlpatterns = [
     path("api/accounts" , AccountLoginInfoListView.as_view()),
     path("api/analytics",analyticsFBViews),
     path("api/checkExistHandleFBViews",checkExistHandleFBViews),
+    path("api/testing",testing)
 ] 
 

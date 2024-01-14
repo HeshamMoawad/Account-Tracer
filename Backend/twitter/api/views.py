@@ -20,8 +20,9 @@ from .serializer import (
     AccountLoginInfoSerializer,
     AnalyticsSerializer ,
     )
+from ..core.session import TwitterSession
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
+from datetime import datetime , timedelta
 # from .TWlogin import LoginUsingBrowser
 # from core.session import TwitterSession
 # import datetime
@@ -80,7 +81,6 @@ class AccountLoginInfoListView(ListAPIView):
 def checkExistAccountFBViews(request:Request):
     agentName = request.query_params.get('agentName','')
     project_name = request.query_params.get('project','')
-    # print(request.query_params , "\n" ,agentName , "\n" + project_name )
     if agentName and project_name:
         try : 
             project = Project.objects.get(name = project_name)
@@ -111,15 +111,15 @@ def analyticsFBViews(request:Request):
             logininfo = AccountLoginInfo.objects.get(account=account)
             analytics_serializer = AnalyticsSerializer(instance = logininfo)
             if date :
-                date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+                date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(days=-1)
                 analytics_serializer.set_conditions(created_datetime__date = date)
             return Response(
                 analytics_serializer.data 
             )
-        else :
+        else : 
             return Response(
                 {} ,
-                status = HTTP_404_NOT_FOUND
+                status = HTTP_200_OK 
             )
     else :
         return Response(
@@ -131,14 +131,12 @@ def analyticsFBViews(request:Request):
 @api_view(["GET"])
 def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in production
     handle = request.query_params.get("handle",None)
-    # print(handle)
     try :
         account = AccountLoginInfo.objects.get(screen_name = handle)
-        # print(account)
         return Response(
             {
                 "name" : account.name,
-                "handle" : account.screen_name ,
+                "handle" : account.account.handle ,
                 "profileImgURL" : account.profileImgURL ,
                 "minDate" : account.created_datetime ,
                 # "maxDate" : account.updated_datetime
@@ -151,3 +149,10 @@ def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in produ
         )
     
 
+@api_view(["GET"])
+def testing(request:Request):
+    account = AccountLoginInfo.objects.first()
+    session = TwitterSession(account.cookies)
+    session.getMyTweets()
+
+    return Response({})

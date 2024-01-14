@@ -91,11 +91,13 @@ class AnalyticsSerializer(ModelSerializer):
     def get_messages(self, obj: AccountLoginInfo):
         return Chat.objects.filter(
             account=obj.account,
+            chat_datetime__date = list(self.params_as_kwargs.values())[0] ,
         ).count()
 
     def get_tweets(self, obj: AccountLoginInfo):
         return Tweet.objects.filter(
             account=obj.account,
+            created_at__date=list(self.params_as_kwargs.values())[0],
             **self.params_as_kwargs
 
         ).count()
@@ -103,6 +105,7 @@ class AnalyticsSerializer(ModelSerializer):
     def get_replies(self, obj: AccountLoginInfo):
         return Reply.objects.filter(
             account=obj.account,
+            created_at__date=list(self.params_as_kwargs.values())[0],
             **self.params_as_kwargs
         ).count()
 

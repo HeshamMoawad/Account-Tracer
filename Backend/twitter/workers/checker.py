@@ -1,13 +1,15 @@
 from ..models import AccountLoginInfo, TwitterAccount
 from ..core.session import TwitterSession
 from .TWlogin import LoginUsingBrowser
-from ..core.userModel import User
+from ..core.objects import User
 from ..core.utils import CookiesParser
 from threading import Thread
-from typing import Optional
+from typing import Optional , Any
 
 
 class BaseChecker(object):
+    def __init__(self, instance:Any) -> None:
+        self.instance = instance
 
     def makeNewLogin(self, twitter_account: TwitterAccount):
         try:
@@ -55,11 +57,15 @@ class BaseChecker(object):
                 user_data = user_data[0]["result"]
                 return User(**user_data)
 
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}( instance = {type(self.instance)} )"
 
 class CheckAccountLoginInfo(BaseChecker):
 
-    def __init__(self, instance: AccountLoginInfo) -> None:
-        self.instance = instance
+    def __init__(self, instance : AccountLoginInfo) -> None:
+
+        super().__init__( instance = instance )
+        self.instance:AccountLoginInfo
         self.handle = self.instance.account.handle
         self.password = self.instance.account.password
 

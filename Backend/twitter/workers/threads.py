@@ -1,4 +1,4 @@
-from ..core.userModel import User
+from ..core.objects import User
 from ..core.utils import CookiesParser
 from ..core.session import TwitterSession
 from ..models import TwitterAccount , AccountLoginInfo

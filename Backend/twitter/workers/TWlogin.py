@@ -10,7 +10,7 @@ from typing import (
     Union
 )
 import logging 
-from core.utils import *
+from ..core.utils import *
 
 # logging.getLogger('seleniumwire').setLevel(logging.WARNING)
 
