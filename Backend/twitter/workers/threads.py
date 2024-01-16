@@ -8,11 +8,11 @@ from threading import Thread
 
 class GetAccountLoginInfoFromInstanceThread(Thread):
     
-    def __init__(self, model:TwitterAccount) -> None:
+    def __init__(self, instance:TwitterAccount) -> None:
         super(GetAccountLoginInfoFromInstanceThread,self).__init__()
-        self.handle = model.handle
-        self.password = model.password
-        self.instance = model
+        self.handle = instance.handle
+        self.password = instance.password
+        self.instance = instance
 
     def run(self) -> None:
         try :
@@ -27,7 +27,7 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
 
     def createSession(self,cookie:str):
         session = TwitterSession(cookie)
-        me = session.getMe()
+        me = session._getMe()
         user_data = me["data"]["users"]
         if user_data :
             user_data = user_data[0]["result"]
