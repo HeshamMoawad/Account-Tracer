@@ -178,12 +178,13 @@ class AbstractParser(object):
         return legacies
         
 
-    def getLegacyFromReplies(self,replies:typing.List[dict]):
+    def getLegacyFromReplies(self,replies:typing.List[dict])-> typing.List[ReplyObject]:
         legacies = []
         for reply in replies :
             try :
-                legacy = reply['content']['items'][1]['item']['itemContent']['tweet_results']['result']['legacy']
-                legacies.append(ReplyObject(legacy))
+                legacy = reply['content']['items'][-1]['item']['itemContent']['tweet_results']['result']['legacy']
+                replied_from = reply['content']['items'][-2]['item']['itemContent']['tweet_results']['result']['legacy'] if len(reply['content']['items']) >= 2 else None
+                legacies.append(ReplyObject(legacy,replied_from))
             except Exception as e :
                 print(f"\n[-]\tError in : {e} \n==> {reply}")
                 traceback.print_exc()
