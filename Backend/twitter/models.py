@@ -86,7 +86,7 @@ class Chat(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
     
     def __str__(self) -> str:
-        return f"{self.conversation_id} - {self.status}"
+        return f"{self.chat_datetime.date()} - {self.conversation_id} - {self.status}"
 
     class Meta:
         verbose_name = 'Chat'
@@ -101,7 +101,7 @@ class FollowUnFollow(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.account}  =>  {self.followers} -- {self.following}"
+        return f"{self.account}  =>  {self.followers} -- {self.following} -- {self.created_datetime.date()}"
     class Meta:
         verbose_name = 'Follower & Following Count'
         verbose_name_plural = 'Follower & Following Counts'
@@ -111,12 +111,14 @@ class MediaLink(models.Model):
     class Type(models.TextChoices):
         VIDEO = 'video', 'Video'
         IMAGE = 'image', 'Image'
-    url = models.URLField(verbose_name="Media URL")
+    url = models.URLField(verbose_name="Media URL" , unique=True)
     type = models.CharField(
         max_length= 20 ,
         choices=Type.choices,
         default= Type.IMAGE ,
     )
+    def __str__(self) -> str:
+        return f"{self.url}"
 
 class Tweet(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
@@ -128,12 +130,14 @@ class Tweet(models.Model):
     bookmark_count =  models.IntegerField(verbose_name="BookMarked Count")
     media_links = models.ManyToManyField(MediaLink , blank=True )
     full_text = models.TextField(verbose_name="Body")
+    quoted_retweted_from = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True,related_name="quotedretwetedfrom")
+    retweted_from = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True,related_name="retwetedfrom")
     created_at = models.DateTimeField(verbose_name="Created At")
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
     
     def __str__(self) -> str:
-        return f"{self.created_at} - {self.conversation_id_str}"
+        return f"{self.created_at.date()} - {self.conversation_id_str}"
 
     class Meta:
         verbose_name = 'Tweet'
@@ -150,13 +154,14 @@ class Reply(models.Model):
     media_links = models.ManyToManyField(MediaLink , blank=True  )
     full_text = models.TextField(verbose_name="Body")
     media_url = models.CharField(verbose_name="Media URL", max_length=200)
-    in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50)
+    replied_from = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True,related_name="repliedfrom")
+    in_reply_to_screen_name = models.CharField(verbose_name="Replying to", max_length=50,null=True)
     created_at = models.DateTimeField(verbose_name="Created At")
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.created_at} - {self.conversation_id_str}"
+        return f"{self.created_at.date()} - {self.conversation_id_str}"
 
     class Meta:
         verbose_name = 'Reply'
