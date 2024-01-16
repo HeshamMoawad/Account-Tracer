@@ -1,17 +1,18 @@
-from requests import  Session , Response
-from .parsers import CookiesParser
+from requests import Session, Response
 from .types import (
-    HttpResponseTypes , 
-    HttpStatusCodeTypes ,
-    )
+    HttpResponseTypes,
+    HttpStatusCodeTypes,
+)
 from .objects import (
-    ReplyObject ,
+    ReplyObject,
     TweetObject
-    )
-import typing  , datetime
+)
+import typing
+import datetime
 from .parsers import (
     TweetsParser,
-    ChatsParser ,
+    ChatsParser,
+    CookiesParser
 )
 from .constants import (
     USERS_BY_REST_IDS_URL,
@@ -21,25 +22,28 @@ from .constants import (
     INBOX_INIT_PARAMS,
     TRUSTED_URL,
     TRUSTED_PARAMS,
-    HEADERS ,
+    HEADERS,
     ADD_ENTRY_TYPE
 
 )
-# from .utils import save
 from ..models import (
-    AccountLoginInfo , 
-    Tweet , 
-    Reply , 
-    MediaLink )
+    AccountLoginInfo,
+    Tweet,
+    Reply,
+    MediaLink
+)
 import typing
-import datetime 
+import datetime
 
 
 class TwitterAbastractResponse(Response):
-    class Type(HttpResponseTypes): ...
-    class StatusCodeTypes(HttpStatusCodeTypes): ...
+    class Type(HttpResponseTypes):
+        ...
 
-    def __init__(self,response:Response,**kwargs) -> None:
+    class StatusCodeTypes(HttpStatusCodeTypes):
+        ...
+
+    def __init__(self, response: Response, **kwargs) -> None:
         # super().__init__()
         self.__dict__ = response.__dict__
         # Information responses
@@ -52,107 +56,115 @@ class TwitterAbastractResponse(Response):
         self.__ClientError = self.Type.clientError()
         # Server error responses
         self.__ServerError = self.Type.serverError()
-    
-    def __eq__(self, __o:typing.Any) -> bool:
-        if isinstance(__o,TwitterAbastractResponse):
+
+    def __eq__(self, __o: typing.Any) -> bool:
+        if isinstance(__o, TwitterAbastractResponse):
             return self.status_code_text == __o.status_code_text
-        elif isinstance(__o,Response) :
+        elif isinstance(__o, Response):
             return self.status_code == __o.status_code
-        else :
-            raise TypeError(f"Cannot compare with object of type {type(__o)}. Expected TwitterAbastractResponse or Response object.")
+        else:
+            raise TypeError(
+                f"Cannot compare with object of type {type(__o)}. Expected TwitterAbastractResponse or Response object.")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(status_code={self.status_code},type={self.status_code_type},type_text={self.status_code_text})"
 
-    def __getitem__(self,args:typing.Union[tuple,list])->bool:
-        if isinstance(args,str):return self.status_code_type == args or self.status_code_text == args
-        elif isinstance(args,tuple) or isinstance(args,list):return self.status_code_type in args or self.status_code_text in args
-        else : raise TypeError(f"Cannot Check Type with object of type {type(args)}. Expected str or tuple or list object.")
+    def __getitem__(self, args: typing.Union[tuple, list]) -> bool:
+        if isinstance(args, str):
+            return self.status_code_type == args or self.status_code_text == args
+        elif isinstance(args, tuple) or isinstance(args, list):
+            return self.status_code_type in args or self.status_code_text in args
+        else:
+            raise TypeError(
+                f"Cannot Check Type with object of type {type(args)}. Expected str or tuple or list object.")
 
     @property
-    def status_code_type(self)->Type:
-        if self.status_code in self.__Informational.keys() : 
+    def status_code_type(self) -> Type:
+        if self.status_code in self.__Informational.keys():
             return self.Type.INFORMATIONAL
-        elif self.status_code in self.__Success.keys() : 
+        elif self.status_code in self.__Success.keys():
             return self.Type.SUCCESS
-        elif self.status_code in self.__Redirect.keys() : 
+        elif self.status_code in self.__Redirect.keys():
             return self.Type.REDIRECT
-        elif self.status_code in self.__ClientError.keys() : 
+        elif self.status_code in self.__ClientError.keys():
             return self.Type.CLIENTERROR
-        elif self.status_code in self.__ServerError.keys() : 
+        elif self.status_code in self.__ServerError.keys():
             return self.Type.SERVERERROR
-        else : return self.Type.UNKNOWN
-    
+        else:
+            return self.Type.UNKNOWN
+
     @property
-    def status_code_text(self)->str :
-        if self.status_code in self.__Informational.keys() : 
+    def status_code_text(self) -> str:
+        if self.status_code in self.__Informational.keys():
             return self.__Informational[self.status_code]
-        elif self.status_code in self.__Success.keys() : 
+        elif self.status_code in self.__Success.keys():
             return self.__Success[self.status_code]
-        elif self.status_code in self.__Redirect.keys() : 
+        elif self.status_code in self.__Redirect.keys():
             return self.__Redirect[self.status_code]
-        elif self.status_code in self.__ClientError.keys() : 
+        elif self.status_code in self.__ClientError.keys():
             return self.__ClientError[self.status_code]
-        elif self.status_code in self.__ServerError.keys() : 
+        elif self.status_code in self.__ServerError.keys():
             return self.__ServerError[self.status_code]
-        else : return self.Type.UNKNOWN
- 
-    def filterBOMchar(self)->str:
+        else:
+            return self.Type.UNKNOWN
+
+    def filterBOMchar(self) -> str:
         return self.text.lstrip('\ufeff')
 
 
-class AbstractSession(Session): 
+class AbstractSession(Session):
 
-    def __init__(self , cookies:str) -> None:
+    def __init__(self, cookies: str) -> None:
         super().__init__()
         self.cookies_str = cookies
         self.parser = CookiesParser(cookies)
         self.headers = HEADERS.copy()
-        self.headers.update({"cookie":self.cookies_str})
-        self.headers.update({"x-csrf-token":self.parser.token})
+        self.headers.update({"cookie": self.cookies_str})
+        self.headers.update({"x-csrf-token": self.parser.token})
         self.headers.update({'referer': 'https://twitter.com/home'})
         # print(f"Headers : {self.headers}")
 
-
-    def get(self, url:str ,  params:dict=None , data=None , timeout:int=None , proxies:dict=None,  json:dict=None ) -> TwitterAbastractResponse:
-        try : 
-            return TwitterAbastractResponse(response = super().get(
-                url, 
-                params=params, 
-                data=data, 
-                headers=self.headers, 
-                timeout=timeout, 
-                proxies=proxies, 
+    def get(self, url: str,  params: dict = None, data=None, timeout: int = None, proxies: dict = None,  json: dict = None) -> TwitterAbastractResponse:
+        try:
+            return TwitterAbastractResponse(response=super().get(
+                url,
+                params=params,
+                data=data,
+                headers=self.headers,
+                timeout=timeout,
+                proxies=proxies,
                 json=json,
-                ))
-        except Exception as e :
+            ))
+        except Exception as e:
             print(f"[-]\tError : {e}")
 
-
-    def post(self, url: str , data:dict=None, json:dict=None,  params:dict=None, timeout:int=None, proxies:dict=None) -> TwitterAbastractResponse:
-        try : 
-            return TwitterAbastractResponse(response = super().post(
-                url, 
-                params=params, 
-                data=data, 
-                headers=self.headers, 
-                timeout=timeout, 
-                proxies=proxies, 
+    def post(self, url: str, data: dict = None, json: dict = None,  params: dict = None, timeout: int = None, proxies: dict = None) -> TwitterAbastractResponse:
+        try:
+            return TwitterAbastractResponse(response=super().post(
+                url,
+                params=params,
+                data=data,
+                headers=self.headers,
+                timeout=timeout,
+                proxies=proxies,
                 json=json,
-                ))
-        except Exception as e :
+            ))
+        except Exception as e:
             print(f"[-]\tError : {e}")
-
 
 
 class TwitterBaseSession(AbstractSession):
 
-    def __init__(self, cookies: str , max_older : datetime.datetime = datetime.datetime.now()-datetime.timedelta(days=-2)) -> None:
+    def __init__(self, cookies: str, max_older: datetime.datetime = datetime.datetime.now()-datetime.timedelta(days=-2)) -> None:
         super().__init__(cookies)
-        self.account_model = AccountLoginInfo.objects.filter(rest_id=self.parser.userID).first().account
+        self.login_info_model = AccountLoginInfo\
+                                    .objects\
+                                        .filter(rest_id=self.parser.userID)\
+                                            .first()
+        self.account_model = self.login_info_model.account
         self.max_older = max_older
 
-    def __getMe(self):
+    def _getMe(self):
         params = {
             'variables': '{"userIds":["$$$$"]}'.replace("$$$$", self.parser.userID),
             'features': '{"responsive_web_graphql_exclude_directive_enabled":true,"verified_phone_label_enabled":false,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
@@ -164,10 +176,9 @@ class TwitterBaseSession(AbstractSession):
             return {}
         else:
             print(response)
-            return {"message" : response.text }
+            return {"message": response.text}
 
-
-    def __getMyTweets(
+    def _getMyTweets(
             self,
             count: int = 40,
             cursor: typing.Union[str, None] = None,
@@ -185,8 +196,7 @@ class TwitterBaseSession(AbstractSession):
         if response.status_code in SUCCESS_STATUS_CODES:
             return TweetsParser(response.json())
 
-
-    def __init_Inbox(self):
+    def _init_Inbox(self):
         params = INBOX_INIT_PARAMS.copy()
         response = self.get(
             url=INBOX_INIT_URL,
@@ -195,7 +205,7 @@ class TwitterBaseSession(AbstractSession):
         if response[response.StatusCodeTypes.OK]:
             return ChatsParser(response.json(), parse_date=None)
 
-    def __trusted(self, next_entry_id: str):
+    def _trusted(self, next_entry_id: str):
         params = TRUSTED_PARAMS.copy()
         params.update({
             "max_id": next_entry_id
@@ -206,45 +216,46 @@ class TwitterBaseSession(AbstractSession):
         )
         if response[response.StatusCodeTypes.OK]:
             return ChatsParser(response.json(), parse_date=None)
-    
-    def __saveObject(self, model,instance):
+
+    def _saveObject(self, model, instance):
         obj, created = model.objects.get_or_create(
-            account = self.account_model ,
+            account=self.account_model,
             **instance.data
         )
         if created:
             obj.save()
         return obj
 
-    def __saveObjects(self, model,iterable:typing.Iterable):
+    def _saveObjects(self, model, iterable: typing.Iterable):
         for it in iterable:
-            self.__saveObject(model,it)
+            self._saveObject(model, it)
 
-    def __saveReply(self,reply:ReplyObject):
-        obj:Reply = self.__saveObject(Reply,reply)
-        if reply.replied_from :
-            obj.replied_from = self.__saveReply(reply.replied_from)
+    def _saveReply(self, reply: ReplyObject):
+        obj: Reply = self._saveObject(Reply, reply)
+        if reply.replied_from:
+            obj.replied_from = self._saveReply(reply.replied_from)
         links = reply.media_links()
-        if links :
-            for link in links :
-                media_obj , created = MediaLink.objects.get_or_create(url=link)
-                if created :
+        if links:
+            for link in links:
+                media_obj, created = MediaLink.objects.get_or_create(url=link)
+                if created:
                     media_obj.save()
                     obj.media_links.add(media_obj)
         obj.save()
         return obj
 
-    def __saveTweet(self,tweet:TweetObject):
-        obj:Tweet = self.__saveObject(Tweet,tweet)
-        if tweet.quoted_retweted_from :
-            obj.quoted_retweted_from = self.__saveTweet(tweet.quoted_retweted_from)
-        if tweet.retweted_from :
-            obj.retweted_from = self.__saveTweet(tweet.retweted_from)
+    def _saveTweet(self, tweet: TweetObject):
+        obj: Tweet = self._saveObject(Tweet, tweet)
+        if tweet.quoted_retweted_from:
+            obj.quoted_retweted_from = self._saveTweet(
+                tweet.quoted_retweted_from)
+        if tweet.retweted_from:
+            obj.retweted_from = self._saveTweet(tweet.retweted_from)
         links = tweet.media_links()
-        if links :
-            for link in links :
-                media_obj , created = MediaLink.objects.get_or_create(url=link)
-                if created :
+        if links:
+            for link in links:
+                media_obj, created = MediaLink.objects.get_or_create(url=link)
+                if created:
                     media_obj.save()
                     obj.media_links.add(media_obj)
         obj.save()
