@@ -29,7 +29,6 @@ class BaseChecker(object):
             **user.params_new_instance
         )
         new_login_info.save()
-        print("\nSaved\n")
 
     def updateInstance(self, cookie: str, user: UserObject, twitter_account: TwitterAccount) -> Optional[AccountLoginInfo]:
         try:
@@ -43,14 +42,13 @@ class BaseChecker(object):
             login_info.cookies = cookie
             login_info.token = CookiesParser(cookie).token
             login_info.save()
-            print("\nSaved\n")
             return login_info
         except AccountLoginInfo.DoesNotExist:
             return
 
     def createTwitterSession(self, cookie: str) -> Optional[UserObject]:
         session = TwitterSession(cookie)
-        info = session.getMe()
+        info = session._getMe()
         if info:
             user_data = info["data"]["users"]
             if user_data:
