@@ -8,6 +8,7 @@ from .models import (
     Chat ,
     Reply ,
     FollowUnFollow,
+    MediaLink
     )
 
 # Register your models here.
@@ -20,5 +21,6 @@ admin.site.register(Tweet)
 admin.site.register(Chat)
 admin.site.register(Reply)
 admin.site.register(FollowUnFollow)
+admin.site.register(MediaLink)
 
 
