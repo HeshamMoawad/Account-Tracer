@@ -1,7 +1,7 @@
 import typing , datetime
-from django.utils import timezone
+# from django.utils import timezone
 
-class User(object):
+class UserObject(object):
     def __init__(self, **kwargs):
         self.params_new_instance = {}
         self.params_new_instance.update({
@@ -21,6 +21,7 @@ class User(object):
 
     def __getitem__(self,__o:str):
         return self.params_new_instance.get(__o)
+
 
 
 class TweetObject(object):
@@ -44,12 +45,14 @@ class TweetObject(object):
     @property
     def quoted_retweted_from(self) -> typing.Optional['TweetObject']:
         if self.quoted_status_result :
-            return TweetObject(self.quoted_status_result.get("result").get("legacy"))
+            # print(self.quoted_status_result.keys())
+            return TweetObject(self.quoted_status_result["result"]["legacy"])
     
     @property
     def retweted_from (self)  -> typing.Optional['TweetObject']:
         if self.retweeted_status_result :
-            return TweetObject(self.retweeted_status_result.get("result").get("tweet").get("legacy"))
+            # print(self.retweeted_status_result["result"].keys())
+            return TweetObject(self.retweeted_status_result["result"]["legacy"])
 
     @property
     def data(self):
@@ -65,10 +68,12 @@ class TweetObject(object):
         }
 
 class ReplyObject(TweetObject):
-    def __init__(self, legacy: dict) -> None:
+    def __init__(self, legacy: dict , replied_from:dict=None ) -> None:
         super().__init__(legacy)
         self.in_reply_to_screen_name = legacy.get("in_reply_to_screen_name",None)
-
+        self.replied_from = None
+        if replied_from:
+            self.replied_from = ReplyObject(replied_from)
     @property
     def data(self):
         data = super().data
