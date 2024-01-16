@@ -96,12 +96,12 @@ class FollowUnFollow(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     followers = models.IntegerField(verbose_name="Followers Count")
     following = models.IntegerField(verbose_name="Following Count")
-
+    likes = models.IntegerField(verbose_name="Likes Count" , null=True)
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.account}  =>  {self.followers} -- {self.following} -- {self.created_datetime.date()}"
+        return f"{self.account.handle} - Followers {self.followers} - Following {self.following} - {self.created_datetime}"
     class Meta:
         verbose_name = 'Follower & Following Count'
         verbose_name_plural = 'Follower & Following Counts'
@@ -137,7 +137,15 @@ class Tweet(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
     
     def __str__(self) -> str:
-        return f"{self.created_at.date()} - {self.conversation_id_str}"
+        return f"{self.created_at.date()} - {self.conversation_id_str} {self.getString()}"
+
+    def getString(self):
+        string = ""
+        if self.quoted_retweted_from :
+            string += f'- Quoted Retweet {self.quoted_retweted_from.conversation_id_str}'
+        elif self.retweted_from :
+            string += f'- Retweet {self.retweted_from.conversation_id_str}'
+        return string
 
     class Meta:
         verbose_name = 'Tweet'
@@ -161,7 +169,13 @@ class Reply(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.created_at.date()} - {self.conversation_id_str}"
+        return f"{self.created_at.date()} - {self.conversation_id_str} {self.getString()}"
+
+    def getString(self):
+        string = ""
+        if self.replied_from :
+            string += f'- Replied To  {self.replied_from.conversation_id_str}'
+        return string
 
     class Meta:
         verbose_name = 'Reply'
