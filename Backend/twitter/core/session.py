@@ -3,7 +3,10 @@ from .models import (
     ChatsParser ,
 )
 from .abstract import TwitterAbstractSession
-from .objects import  TweetObject
+from .objects import  (
+    TweetObject ,
+    ReplyObject ,
+    )
 from .constants import (
     USERS_BY_REST_IDS_URL,
     USER_TWEETS_AND_REPLIES_URL,
@@ -14,16 +17,22 @@ from .constants import (
     TRUSTED_PARAMS,
 )
 # from .utils import save
-from ..models import Chat, AccountLoginInfo , Tweet , Reply , models
+from ..models import (
+    Chat, 
+    AccountLoginInfo , 
+    Tweet , 
+    Reply , 
+    MediaLink )
 import typing
 import datetime 
 
 
 class TwitterSession(TwitterAbstractSession):
 
-    def __init__(self, cookies: str) -> None:
+    def __init__(self, cookies: str , max_older : datetime.datetime = datetime.datetime.now()-datetime.timedelta(days=-2)) -> None:
         super().__init__(cookies)
         self.account_model = AccountLoginInfo.objects.filter(rest_id=self.parser.userID).first().account
+        self.max_older = max_older
 
     def getMe(self):
         params = {
@@ -37,43 +46,36 @@ class TwitterSession(TwitterAbstractSession):
             return {}
         else:
             print(response)
-            return {}
+            return {"message" : response.text }
 
-    # def getMyTweets(self, _from: datetime.datetime, _to: datetime.datetime = datetime.datetime.today()):
-    #     stop = False
-    #     cursor = None
-    #     tweets: typing.List[dict] = []
-    #     while not stop:
-    #         parser = self._getMyTweets(cursor=cursor)
-    #         tweets += parser.tweets
-    #         cursor = parser.bottomCursor
-    #         date = parser.createdAtParser(parser.tweets[-1])
-    #         print(_from.date(), date.date(),
-    #               _to.date(), date.date() >= _to.date())
-    #         if (date.date() >= _from.date()):
-    #             stop = True
-    #             break
-    #     return TweetsParser().filterBetween(tweets, _from=_from)
-
-
-    def getMyTweets(self, _cursor=None, _con = False , older: datetime.datetime = datetime.datetime.now().date()):
+    def saveMyTweets(self, _cursor=None, _con = False ):
         if _cursor or not _con:
             tweet_parser = self.__getMyTweets(cursor=_cursor)
             if tweet_parser :
                 tweets = tweet_parser.tweets
-                self.__saveTweets(tweets)
-                print(tweets[-1].created_at)
-                self.__saveObjects(Reply,tweet_parser.replies)
-                _cursor = tweet_parser.bottomCursor
-                self.getMyTweets(
-                    _cursor=_cursor ,
-                    older=older,
-                    _con=True
-                )
+                replies = tweet_parser.replies
+                [self.__saveTweet(tweet) for tweet in tweets]
+                [self.__saveReply(reply) for reply in replies]
+                print(_cursor ,tweets[-1].created_at.date() , self.max_older.date() , tweets[-1].created_at.date() <= self.max_older.date() )
+                if not tweets[-1].created_at.date() <= self.max_older.date() :
+                    _cursor = tweet_parser.getValueFromCursor(tweet_parser.bottomCursor)
+                    self.saveMyTweets(
+                        _cursor=_cursor ,
+                        _con=True
+                    )
 
-
-                
-
+    def saveMyChats(self, initial=None, con=False ):
+        if not initial and not con:
+            initial = self.__init_Inbox()
+        if initial:
+            self.__saveObjects(Chat,initial.conversations)
+            if initial.next_entry_id:
+                trusted = self.__trusted(next_entry_id=initial.next_entry_id)
+                if trusted:
+                    self.__saveObjects(Chat,trusted.conversations)
+                    if not trusted.conversations[-1].chat_datetime.date() <= self.max_older.date():
+                        if trusted.next_entry_id:
+                            self.saveMyChats(trusted, con=True)
 
 
     def __getMyTweets(
@@ -95,32 +97,15 @@ class TwitterSession(TwitterAbstractSession):
             return TweetsParser(response.json())
 
 
-    def getMyChats(self, initial=None, con=False):
-        if not initial and not con:
-            initial = self.__init_Inbox()
-        if initial:
-            # save init conversations
-            print(f"starting in map {len(initial.conversations)}")
-            self.__saveObjects(Chat,initial.conversations)
-            if initial.next_entry_id:
-                trusted = self.__trusted(next_entry_id=initial.next_entry_id)
-                if trusted:
-                    # save conversations
-                    print(f"starting in secound map {trusted.conversations}")
-                    self.__saveObjects(Chat,trusted.conversations)
-                    if trusted.next_entry_id:
-                        self.getMyChats(trusted, con=True)
-
-
     def __init_Inbox(self):
         params = INBOX_INIT_PARAMS.copy()
         response = self.get(
             url=INBOX_INIT_URL,
             params=params
         )
-        print(response)
+        # print(response)
         if response[response.StatusCodeTypes.OK]:
-            return ChatsParser(response.json(), account=self.account_model, parse_date=None)
+            return ChatsParser(response.json(), parse_date=None)
 
     def __trusted(self, next_entry_id: str):
         params = TRUSTED_PARAMS.copy()
@@ -131,9 +116,9 @@ class TwitterSession(TwitterAbstractSession):
             url=TRUSTED_URL,
             params=params
         )
-        print(response)
+        # print(response)
         if response[response.StatusCodeTypes.OK]:
-            return ChatsParser(response.json(), account=self.account_model, parse_date=None)
+            return ChatsParser(response.json(), parse_date=None)
     
     def __saveObject(self, model,instance):
         obj, created = model.objects.get_or_create(
@@ -142,20 +127,38 @@ class TwitterSession(TwitterAbstractSession):
         )
         if created:
             obj.save()
+        return obj
 
     def __saveObjects(self, model,iterable:typing.Iterable):
         for it in iterable:
             self.__saveObject(model,it)
 
-    def __saveTweet(self,instance:TweetObject):
-        self.__saveObject(Tweet,instance)
-        retweet = instance.retweted_from
-        quoted = instance.quoted_retweted_from
-        if  retweet:
-            self.__saveTweet(retweet)
-        if quoted :
-            self.__saveTweet(quoted)
+    def __saveReply(self,reply:ReplyObject):
+        obj:Reply = self.__saveObject(Reply,reply)
+        if reply.replied_from :
+            obj.replied_from = self.__saveReply(reply.replied_from)
+        links = reply.media_links()
+        if links :
+            for link in links :
+                media_obj , created = MediaLink.objects.get_or_create(url=link)
+                if created :
+                    media_obj.save()
+                    obj.media_links.add(media_obj)
+        obj.save()
+        return obj
 
-    def __saveTweets(self,iterable:typing.Iterable):
-        for tweet in iterable :
-            self.__saveTweet(tweet)
+    def __saveTweet(self,tweet:TweetObject):
+        obj:Tweet = self.__saveObject(Tweet,tweet)
+        if tweet.quoted_retweted_from :
+            obj.quoted_retweted_from = self.__saveTweet(tweet.quoted_retweted_from)
+        if tweet.retweted_from :
+            obj.retweted_from = self.__saveTweet(tweet.retweted_from)
+        links = tweet.media_links()
+        if links :
+            for link in links :
+                media_obj , created = MediaLink.objects.get_or_create(url=link)
+                if created :
+                    media_obj.save()
+                    obj.media_links.add(media_obj)
+        obj.save()
+        return obj
