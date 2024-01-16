@@ -32,26 +32,28 @@ class TweetsParser(AbstractParser):
 
 
 class ChatDetails(object):
-    def __init__(self, account, data: dict) -> None:
-        self.account = account
+    def __init__(self, data: dict) -> None:
         self.conversation_id = data.get("conversation_id")
         self.chat_datetime = timezone.make_aware(datetime.datetime.fromtimestamp(float(float(data.get("sort_timestamp"))/1000))) 
         self.status = data.get("status")
 
     @property
     def data(self):
-        return self.__dict__.copy()
+        return {
+            "conversation_id":self.conversation_id ,
+            "chat_datetime" : self.chat_datetime ,
+            "status" : self.status
+        }
 
 
 class ChatsParser(object):
     INIT = "inbox_initial_state"
     TRUSTED = "inbox_timeline"
 
-    def __init__(self, response: dict, account: typing.Any = None, parse_date: typing.Optional[datetime.datetime] = datetime.datetime.now()) -> None:
+    def __init__(self, response: dict, parse_date: typing.Optional[datetime.datetime] = datetime.datetime.now()) -> None:
         self.conversations = []
         self.next_entry_id = None
         self.response = response
-        self.account = account
         try:
             self.type = list(response.keys())[0]
         except IndexError:
@@ -61,7 +63,6 @@ class ChatsParser(object):
             
             self.conversations: typing.List[ChatDetails] = list(map(
                 lambda chat: ChatDetails(
-                account=self.account,
                 data = conversations_as_dict[chat]
                 ), 
                 conversations_as_dict.keys()
