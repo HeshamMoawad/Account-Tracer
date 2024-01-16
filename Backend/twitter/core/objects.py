@@ -15,9 +15,11 @@ class UserObject(object):
             "profileImgURL" : legacy.get("profile_image_url_https"," ") ,
             "verified" : bool(legacy.get("verified",False)) ,
             "suspend" : bool(legacy.get("suspended",False))  ,
-            "created_at" : legacy.get("created_at","")
+            "created_at" : datetime.datetime.strptime(legacy.get('created_at'), "%a %b %d %H:%M:%S %z %Y") ,
         })
-
+        self.followers = legacy.get("followers_count",0) 
+        self.following =  legacy.get("friends_count",0)
+        self.likes = legacy.get("favourites_count",0)
 
     def __getitem__(self,__o:str):
         return self.params_new_instance.get(__o)
