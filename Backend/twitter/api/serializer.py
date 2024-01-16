@@ -6,7 +6,8 @@ from ..models import (
     FollowUnFollow,
     Chat,
     Tweet,
-    Reply
+    Reply ,
+    MediaLink
 )
 from rest_framework.serializers import ModelSerializer, SerializerMethodField 
 
@@ -137,3 +138,28 @@ class AnalyticsSerializer(ModelSerializer):
             'tweets',
             'replies',
         ]
+
+class MediaLinksSerializer(ModelSerializer):
+    class Meta:
+        model = MediaLink
+        fields = '__all__'
+
+
+class TweetSerializer(ModelSerializer):
+    media_links = MediaLinksSerializer(many=True,read_only=True)
+    class Meta:
+        model = Tweet
+        fields = [
+            "conversation_id_str",
+            'favorite_count',
+            'reply_count',
+            'retweet_count',
+            'user_id_str',
+            'bookmark_count',
+            'full_text',
+            'created_at',
+            "media_links",
+            "retweted_from",
+            "quoted_retweted_from"
+        ]
+        depth = 1
