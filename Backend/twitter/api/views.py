@@ -13,12 +13,14 @@ from ..models import (
     Agent , 
     AccountLoginInfo , 
     TwitterAccount ,
+    Tweet
      )
 from .serializer import (
     ProjectSerializer , 
     AgentSerializer , 
     AccountLoginInfoSerializer,
     AnalyticsSerializer ,
+    TweetSerializer
     )
 from ..core.session import TwitterSession
 from django.core.exceptions import ObjectDoesNotExist
@@ -139,7 +141,7 @@ def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in produ
                 "handle" : account.account.handle ,
                 "profileImgURL" : account.profileImgURL ,
                 "minDate" : account.created_datetime ,
-                # "maxDate" : account.updated_datetime
+                "maxDate" : datetime.now().date()
             } ,
         )
     except AccountLoginInfo.DoesNotExist :
@@ -153,7 +155,16 @@ def checkExistHandleFBViews(request:Request):  # must uncomment maxDate in produ
 def testing(request:Request):
     account = AccountLoginInfo.objects.first()
     session = TwitterSession(account.cookies)
-    session.getMyTweets()
-    session.getMyChats()
+    session.saveMyStats()
+    session.saveMyTweets()
+    session.saveMyChats()
+
 
     return Response({})
+
+
+class TweetListView(ListAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+
+
