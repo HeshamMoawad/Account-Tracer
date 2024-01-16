@@ -1,7 +1,23 @@
-from django.utils import timezone
 import typing  , datetime
 from .abstract import AbstractParser
+from urllib.parse import unquote
+from http.cookies import SimpleCookie
+from .constants import TOKEN_IDENTIFIRE , USERID_IDENTIFIRE
+from .objects import ChatDetails
 
+
+class CookiesParser(object):
+    def __init__(self,cookies) -> None:
+        self.simplecookie = SimpleCookie()
+        self.simplecookie.load(cookies)
+        self.cookies_as_dict = {k: v.value for k, v in self.simplecookie.items()}
+
+    @property
+    def token(self):
+        return unquote(self.cookies_as_dict[TOKEN_IDENTIFIRE])
+    @property
+    def userID(self):
+        return unquote(self.cookies_as_dict[USERID_IDENTIFIRE]).split("=")[-1]
 
 
 
@@ -29,21 +45,6 @@ class TweetsParser(AbstractParser):
 
         return list(filter(lambda x : self.checkDateFromLegacy(x,_from=_from,_to=_to) , legaciesList))
         
-
-
-class ChatDetails(object):
-    def __init__(self, data: dict) -> None:
-        self.conversation_id = data.get("conversation_id")
-        self.chat_datetime = timezone.make_aware(datetime.datetime.fromtimestamp(float(float(data.get("sort_timestamp"))/1000))) 
-        self.status = data.get("status")
-
-    @property
-    def data(self):
-        return {
-            "conversation_id":self.conversation_id ,
-            "chat_datetime" : self.chat_datetime ,
-            "status" : self.status
-        }
 
 
 class ChatsParser(object):

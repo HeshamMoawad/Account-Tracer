@@ -1,5 +1,5 @@
-from ..core.objects import User
-from ..core.utils import CookiesParser
+from ..core.objects import UserObject
+from ..core.parsers import CookiesParser
 from ..core.session import TwitterSession
 from ..models import TwitterAccount , AccountLoginInfo
 from .TWlogin import LoginUsingBrowser
@@ -37,7 +37,7 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
 
 
     def createAccountLoginInfo(self,cookie,**user_data):
-        user = User(**user_data)
+        user = UserObject(**user_data)
         new_login_info = AccountLoginInfo.objects.create(
             account = self.instance ,
             cookies = cookie ,
@@ -49,7 +49,7 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
         return new_login_info
 
     def accountLoginInfoHandler(self,cookie,**user_data):
-        user = User(**user_data)
+        user = UserObject(**user_data)
         try :
             login_info = AccountLoginInfo.objects.get(
                 screen_name = self.handle.replace("@","")

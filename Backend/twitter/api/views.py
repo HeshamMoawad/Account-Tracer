@@ -154,5 +154,6 @@ def testing(request:Request):
     account = AccountLoginInfo.objects.first()
     session = TwitterSession(account.cookies)
     session.getMyTweets()
+    session.getMyChats()
 
     return Response({})

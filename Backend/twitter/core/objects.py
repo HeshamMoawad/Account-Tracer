@@ -1,5 +1,5 @@
 import typing , datetime
-# from django.utils import timezone
+from django.utils import timezone
 
 class UserObject(object):
     def __init__(self, **kwargs):
@@ -82,3 +82,16 @@ class ReplyObject(TweetObject):
         })
         return data
 
+class ChatDetails(object):
+    def __init__(self, data: dict) -> None:
+        self.conversation_id = data.get("conversation_id")
+        self.chat_datetime = timezone.make_aware(datetime.datetime.fromtimestamp(float(float(data.get("sort_timestamp"))/1000))) 
+        self.status = data.get("status")
+
+    @property
+    def data(self):
+        return {
+            "conversation_id":self.conversation_id ,
+            "chat_datetime" : self.chat_datetime ,
+            "status" : self.status
+        }

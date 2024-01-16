@@ -1,8 +1,8 @@
 from ..models import AccountLoginInfo, TwitterAccount
 from ..core.session import TwitterSession
 from .TWlogin import LoginUsingBrowser
-from ..core.objects import User
-from ..core.utils import CookiesParser
+from ..core.objects import UserObject
+from ..core.parsers import CookiesParser
 from threading import Thread
 from typing import Optional , Any
 
@@ -21,7 +21,7 @@ class BaseChecker(object):
         except Exception as e:
             print(e)
 
-    def createNewInstance(self, instance: TwitterAccount, cookie, user: User):
+    def createNewInstance(self, instance: TwitterAccount, cookie, user: UserObject):
         new_login_info = AccountLoginInfo.objects.create(
             account=instance,
             cookies=cookie,
@@ -31,7 +31,7 @@ class BaseChecker(object):
         new_login_info.save()
         print("\nSaved\n")
 
-    def updateInstance(self, cookie: str, user: User, twitter_account: TwitterAccount) -> Optional[AccountLoginInfo]:
+    def updateInstance(self, cookie: str, user: UserObject, twitter_account: TwitterAccount) -> Optional[AccountLoginInfo]:
         try:
             login_info = AccountLoginInfo.objects.get(
                 screen_name=twitter_account.handle.replace("@", "")
@@ -48,14 +48,14 @@ class BaseChecker(object):
         except AccountLoginInfo.DoesNotExist:
             return
 
-    def createTwitterSession(self, cookie: str) -> Optional[User]:
+    def createTwitterSession(self, cookie: str) -> Optional[UserObject]:
         session = TwitterSession(cookie)
         info = session.getMe()
         if info:
             user_data = info["data"]["users"]
             if user_data:
                 user_data = user_data[0]["result"]
-                return User(**user_data)
+                return UserObject(**user_data)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}( instance = {type(self.instance)} )"
