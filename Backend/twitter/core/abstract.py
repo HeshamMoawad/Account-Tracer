@@ -5,7 +5,8 @@ from .types import (
 )
 from .objects import (
     ReplyObject,
-    TweetObject
+    TweetObject ,
+    ChatDetails
 )
 import typing
 import datetime
@@ -155,13 +156,15 @@ class AbstractSession(Session):
 
 class TwitterBaseSession(AbstractSession):
 
-    def __init__(self, cookies: str, max_older: datetime.datetime = datetime.datetime.now()-datetime.timedelta(days=-2)) -> None:
+    def __init__(self, cookies: str,only_get_me:bool=False, max_older: datetime.datetime = datetime.datetime.now()-datetime.timedelta(days=-2)) -> None:
         super().__init__(cookies)
-        self.login_info_model = AccountLoginInfo\
-                                    .objects\
-                                        .filter(rest_id=self.parser.userID)\
-                                            .first()
-        self.account_model = self.login_info_model.account
+        if not only_get_me :
+
+            self.login_info_model = AccountLoginInfo\
+                                        .objects\
+                                            .filter(rest_id=self.parser.userID)\
+                                                .first()
+            self.account_model = self.login_info_model.account
         self.max_older = max_older
 
     def _getMe(self):
@@ -217,22 +220,26 @@ class TwitterBaseSession(AbstractSession):
         if response[response.StatusCodeTypes.OK]:
             return ChatsParser(response.json(), parse_date=None)
 
-    def _saveObject(self, model, instance , **kwargs ):
+    def _saveObject(self, model, instance ):
         data:dict = instance.data
-        favorite_count = data.pop("favorite_count",None)
-        reply_count = data.pop("reply_count",0)
-        retweet_count = data.pop("retweet_count",0)
-        bookmark_count = data.pop("bookmark_count",0)
-        obj, created = model.objects.get_or_create(
-            account=self.account_model,
-            **data
-        )
-        if favorite_count:
-            obj.favorite_count = favorite_count
-            obj.reply_count = reply_count
-            obj.retweet_count = retweet_count
-            obj.bookmark_count = bookmark_count
-        obj.save()
+        if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
+            obj = model.objects.filter(conversation_id_str = data["conversation_id_str"])
+            if obj.count() >= 1 :
+                obj = obj.first()
+            else :
+                obj, created = model.objects.get_or_create(
+                    account=self.account_model,
+                    **data
+                )
+                if created :
+                    obj.save()
+        else :
+            obj, created = model.objects.get_or_create(
+                account=self.account_model,
+                **data
+            )
+            if created:
+                obj.save()
         return obj
 
     def _saveObjects(self, model, iterable: typing.Iterable):
@@ -240,7 +247,7 @@ class TwitterBaseSession(AbstractSession):
             self._saveObject(model, it)
 
     def _saveReply(self, reply: ReplyObject):
-        obj: Reply = self._saveObject(Reply, reply)
+        obj: Reply = self._saveObject(Reply.objects.filter().c, reply)
         if reply.replied_from:
             obj.replied_from = self._saveReply(reply.replied_from)
         links = reply.media_links()
