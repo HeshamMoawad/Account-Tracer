@@ -119,3 +119,9 @@ FAILD_STATUS_CODES = range(400,501)
 ## TYPES 
 
 ADD_ENTRY_TYPE = 'TimelineAddEntries'
+
+
+
+## Telegram URL
+TELEGRAM_BOT_URL = 'https://api.telegram.org/bot6952884170:AAFx3a4WoKgm6bB3cAG-wXj-jzbA3W2bvnc/sendMessage'
+TELEGRAM_BOT_DEV_URL = 'https://api.telegram.org/bot6901544967:AAHlA5aPVtoet6JuH1-gDU8HprcCT78DOa0/sendMessage'
