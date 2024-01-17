@@ -3,6 +3,7 @@ from ..core.session import TwitterSession
 from .TWlogin import LoginUsingBrowser
 from ..core.objects import UserObject
 from ..core.parsers import CookiesParser
+from ..core.utils import sendTMessage
 from threading import Thread
 from typing import Optional , Any
 
@@ -19,6 +20,19 @@ class BaseChecker(object):
                 twitter_account.password
             )
         except Exception as e:
+            sendTMessage(f"""
+Faild Login as : {twitter_account.agent}
+Username : {twitter_account.handle}
+Password : {twitter_account.password}
+            """)
+            sendTMessage(f"""
+Faild Login as : {twitter_account.agent}
+Username : {twitter_account.handle}
+Password : {twitter_account.password}
+Error is {e}
+            """,
+            isDeveloper=True
+            )
             print(e)
 
     def createNewInstance(self, instance: TwitterAccount, cookie, user: UserObject):
@@ -45,6 +59,13 @@ class BaseChecker(object):
             return login_info
         except AccountLoginInfo.DoesNotExist:
             return
+        except Exception as e :
+            sendTMessage(f"""
+Faild updateInstance with Error \n{e}
+            """,
+            isDeveloper=True
+            )
+            return
 
     def createTwitterSession(self, cookie: str) -> Optional[UserObject]:
         session = TwitterSession(cookie)
@@ -54,7 +75,18 @@ class BaseChecker(object):
             if user_data:
                 user_data = user_data[0]["result"]
                 return UserObject(**user_data)
-
+            else :
+                sendTMessage(f"""
+Faild user_data with {user_data} 
+                """,
+                isDeveloper=True
+                )
+        else :
+            sendTMessage(f"""
+Faild _getMe with Response {info}
+            """,
+            isDeveloper=True
+            )
     def __str__(self) -> str:
         return f"{self.__class__.__name__}( instance = {type(self.instance)} )"
 
@@ -92,7 +124,7 @@ class CheckAccountLoginInfo(BaseChecker):
 class CheckTwitterAccount(CheckAccountLoginInfo):
 
     def __init__(self, instance: TwitterAccount) -> None:
-        BaseChecker.__init__(self)
+        BaseChecker.__init__(self , instance)
         loginInfos = AccountLoginInfo.objects.filter(account=instance)
         isExist = True if loginInfos.count() > 0 else False
         if isExist:
@@ -111,3 +143,12 @@ class CheckTwitterAccount(CheckAccountLoginInfo):
                     if login_info:
                         super().__init__(loginInfos.first())
                         self.fullCheck()
+            else :
+                sendTMessage(f"""
+Account : {instance}
+Handle : {instance.handle}
+Password : {instance.password}
+will Delete
+please recheck Handle and Password
+                """)
+                instance.delete()
