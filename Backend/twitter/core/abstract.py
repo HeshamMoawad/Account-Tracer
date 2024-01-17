@@ -217,13 +217,22 @@ class TwitterBaseSession(AbstractSession):
         if response[response.StatusCodeTypes.OK]:
             return ChatsParser(response.json(), parse_date=None)
 
-    def _saveObject(self, model, instance):
+    def _saveObject(self, model, instance , **kwargs ):
+        data:dict = instance.data
+        favorite_count = data.pop("favorite_count",None)
+        reply_count = data.pop("reply_count",0)
+        retweet_count = data.pop("retweet_count",0)
+        bookmark_count = data.pop("bookmark_count",0)
         obj, created = model.objects.get_or_create(
             account=self.account_model,
-            **instance.data
+            **data
         )
-        if created:
-            obj.save()
+        if favorite_count:
+            obj.favorite_count = favorite_count
+            obj.reply_count = reply_count
+            obj.retweet_count = retweet_count
+            obj.bookmark_count = bookmark_count
+        obj.save()
         return obj
 
     def _saveObjects(self, model, iterable: typing.Iterable):
@@ -245,7 +254,7 @@ class TwitterBaseSession(AbstractSession):
         return obj
 
     def _saveTweet(self, tweet: TweetObject):
-        obj: Tweet = self._saveObject(Tweet, tweet)
+        obj: Tweet = self._saveObject(Tweet, tweet )
         if tweet.quoted_retweted_from:
             obj.quoted_retweted_from = self._saveTweet(
                 tweet.quoted_retweted_from)

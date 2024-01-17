@@ -122,7 +122,7 @@ class MediaLink(models.Model):
 
 class Tweet(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50 , unique=True)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
     retweet_count = models.IntegerField(verbose_name="Retweet Count")
@@ -153,7 +153,7 @@ class Tweet(models.Model):
 
 class Reply(models.Model):
     account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
-    conversation_id_str = models.CharField(verbose_name="ID", max_length=50)
+    conversation_id_str = models.CharField(verbose_name="ID", max_length=50 , unique=True)
     favorite_count = models.IntegerField(verbose_name="Likes Count")
     reply_count = models.IntegerField(verbose_name="Replies Count")
     retweet_count = models.IntegerField(verbose_name="Retweet Count")
