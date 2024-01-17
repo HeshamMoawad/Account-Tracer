@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from colorfield.fields import ColorField
 
 
+User = get_user_model()
 
 
 class Project(models.Model):
@@ -181,4 +183,10 @@ class Reply(models.Model):
         verbose_name = 'Reply'
         verbose_name_plural = 'Replies'
 
-
+class TelegramBotUser(models.Model):
+    user = models.ForeignKey(User, verbose_name="Telegram User", max_length=100 , on_delete=models.CASCADE)
+    telegram_user_id = models.CharField(verbose_name="Telegram User ID", max_length=100 )
+    
+    class Meta:
+        verbose_name = 'Telegram Users ID'
+        verbose_name_plural = 'Telegram Users IDs'

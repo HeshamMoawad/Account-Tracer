@@ -8,7 +8,8 @@ from .models import (
     Chat ,
     Reply ,
     FollowUnFollow,
-    MediaLink
+    MediaLink ,
+    TelegramBotUser
     )
 
 # Register your models here.
@@ -22,5 +23,6 @@ admin.site.register(Chat)
 admin.site.register(Reply)
 admin.site.register(FollowUnFollow)
 admin.site.register(MediaLink)
+admin.site.register(TelegramBotUser)
 
 
