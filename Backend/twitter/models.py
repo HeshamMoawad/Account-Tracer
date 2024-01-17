@@ -185,8 +185,11 @@ class Reply(models.Model):
 
 class TelegramBotUser(models.Model):
     user = models.ForeignKey(User, verbose_name="Telegram User", max_length=100 , on_delete=models.CASCADE)
-    telegram_user_id = models.CharField(verbose_name="Telegram User ID", max_length=100 )
+    telegram_user_id = models.IntegerField(verbose_name="Telegram User ID")
     
+    def __str__(self):
+        return f"{self.user}"
+
     class Meta:
         verbose_name = 'Telegram Users ID'
         verbose_name_plural = 'Telegram Users IDs'
