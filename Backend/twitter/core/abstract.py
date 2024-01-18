@@ -247,7 +247,7 @@ class TwitterBaseSession(AbstractSession):
             self._saveObject(model, it)
 
     def _saveReply(self, reply: ReplyObject):
-        obj: Reply = self._saveObject(Reply.objects.filter().c, reply)
+        obj: Reply = self._saveObject(Reply, reply)
         if reply.replied_from:
             obj.replied_from = self._saveReply(reply.replied_from)
         links = reply.media_links()
