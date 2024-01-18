@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
-import os
+import os , sys , logging
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,6 +29,71 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG' , default= False , cast = bool)
 
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
+
+# class Utf8StreamHandler(logging.StreamHandler):
+#     def emit(self, record):
+#         try:
+#             msg = self.format(record)
+#             if isinstance(msg, str):
+#                 msg = msg.encode(sys.stdout.encoding or 'utf-8', 'replace')
+#             elif isinstance(msg, bytes):
+#                 msg = msg.decode('utf-8', 'replace').encode(sys.stdout.encoding or 'utf-8', 'replace')
+#             stream = self.stream
+#             stream.write(msg + self.terminator)
+#             self.flush()
+#         except Exception:
+#             self.handleError(record)
+
+### Logger as File
+# LOGGING = {            
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     "formatters": {
+#         "verbose": {
+#             "format": "{levelname} [{asctime}] {module} {process:d} {thread:d} {message}",
+#             "style": "{",
+#         },
+#         "simple": {
+#             "format": "({levelname}) [{asctime}] ({module}) : {message}",
+#             "style": "{",
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'debug.log',
+#             "formatter":"verbose" ,
+
+#         },
+#         "console":{
+#             'level' : "DEBUG",
+#             'class' : f'{__name__}.Utf8StreamHandler' ,
+#             # 'class' : 'logging.StreamHandler' ,
+#             "formatter": "verbose",
+#             'stream': 'ext://sys.stdout',
+#             # 'encoding': 'utf-8',  # Specify the encoding here
+#         }
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ["file"],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
+#         "twitter":{
+#             'handlers': ["console"],
+#             'level': 'DEBUG',
+
+#         }
+
+#     },
+# }
+### Set encoding for console stream separately
+# console_handler = LOGGING['handlers']['console']
+# console_handler['stream'] = sys.stdout
+# console_handler['stream'].encoding = 'utf-8'
+
 
 # Application definition
 INSTALLED_APPS = [
