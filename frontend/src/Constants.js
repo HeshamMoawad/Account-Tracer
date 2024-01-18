@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.3.84:8000/";
+const BASE_URL = "http://192.168.3.84:8000/"; 
 
 const TWITTER_GET_ACCOUNTS_URL = BASE_URL + "twitter/api/getAccounts";
 
@@ -14,6 +14,8 @@ const AccountsURL = BASE_URL + "twitter/api/accounts"
 
 const AnalyticsURL = BASE_URL + "twitter/api/analytics"
 
+const AccountTweetsURL = BASE_URL + "twitter/api/accountTweets"
+
 export { 
     BASE_URL, 
     TWITTER_GET_ACCOUNTS_URL, 
@@ -23,4 +25,5 @@ export {
     AccountsURL ,
     CheckExistHandleURL ,
     AnalyticsURL ,
+    AccountTweetsURL ,
 };
