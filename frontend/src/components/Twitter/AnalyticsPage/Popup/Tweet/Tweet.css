@@ -1,0 +1,40 @@
+#tweet{
+    border: 1px solid gray;
+    border-radius: 1%;
+    /* max-height: 500px; */
+
+}
+
+#header{
+    margin-top: 10px;
+}
+
+button#go-to-tweet{
+    color: white;
+    background-color: rgb(26, 140, 216);
+    border: 1px solid gray;
+    border-radius: 10px;
+    max-width: 100px;
+    min-width: 100px;
+    margin-left: 10px;
+}
+label#type{
+    color: rgb(173, 173, 173);
+    /* margin-left: 50px; */
+    text-align: right;
+}
+.img#account-img-as-logo{
+    min-width: 1vw;
+    max-width: 3.5vw;
+    min-height: 1vw;
+    max-height: 3.5vw;
+    border-radius: 50%;
+}
+
+#body{
+    margin-top: 10px;
+}
+
+#footer{
+
+}
