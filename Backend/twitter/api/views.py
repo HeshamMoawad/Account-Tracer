@@ -13,7 +13,7 @@ from ..models import (
     Agent , 
     AccountLoginInfo , 
     TwitterAccount ,
-    Tweet
+    Tweet ,
      )
 from .serializer import (
     ProjectSerializer , 
@@ -76,7 +76,7 @@ class AccountLoginInfoListView(ListAPIView):
         else :
             self.queryset = []
             return self.list(request ,*args,**kwargs)
-        
+
 
 
 @api_view(["GET"])
@@ -167,4 +167,22 @@ class TweetListView(ListAPIView):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
 
+    def get(self,request:Request):
+        date = datetime.strptime(request.query_params.get("date"), "%d/%m/%Y")
+        screen_name = request.query_params.get("screen_name")
+        account = AccountLoginInfo.objects.filter(screen_name=screen_name)
+        if account.count() >= 1 :
+            account = account.first()
+            self.queryset = Tweet.objects.filter(account=account.account , created_at__date = date.date())
+        else :
+            self.queryset = []
+        response =  self.list(request)
+        response.data = {
+            "data" : response.data ,
+            "user" : {
+                "profileImgURL" : account.profileImgURL ,
+                "name" : account.name ,
+            }
+            }
+        return response
 

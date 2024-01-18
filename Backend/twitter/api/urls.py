@@ -19,7 +19,7 @@ urlpatterns = [
     path("api/accounts" , AccountLoginInfoListView.as_view()),
     path("api/analytics",analyticsFBViews),
     path("api/checkExistHandleFBViews",checkExistHandleFBViews),
-    path("api/testing",testing)
-    # path("api/testing",TweetListView.as_view())
+    path("api/accountTweets",TweetListView.as_view()) ,
+    path("api/testing",testing),
 ] 
 
