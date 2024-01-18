@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {AccountTweetsURL} from "../../../../Constants";
+import Tweet from "./Tweet/Tweet";
 
 const Popup = (props) => {
-    const { name , target } = props;
+    const { name , target , date} = props;
     const [isShowed, setIsShowed] = useState(false);
     const [legacies, setLegacies] = useState(null);
-
+    const [userInfo, setUserInfo] = useState(null);
     const onClickShowInfoHandler = () => setIsShowed(!isShowed);
 
     // set legacies from endpoint
     useEffect(() => {
         // endpoint here
-        
-
-    });
+        if (isShowed){
+            console.log(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
+            console.log(target , date,name)
+            axios
+                .get(AccountTweetsURL+`?${new URLSearchParams({
+                    date : `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}` ,
+                    screen_name : target ,
+                })}`)
+                .then(response=>{setLegacies(response.data.data);setUserInfo(response.data.user);console.log(response.data)})
+                .catch(error => console.log(`Fetching Error ${error}`))
+        }
+    },[isShowed]);
 
     return (
         <>
@@ -66,7 +78,8 @@ const Popup = (props) => {
                         </div>
 
                         <div className="offcanvas-body">
-                            {legacies ? (
+                            <div className="container">
+                              {legacies ? (
                                 // when legacies is null before loading endpoint
                                 legacies.length === 0 ? (
                                     //*// When endpoint return empty list (no legacies)
@@ -76,7 +89,7 @@ const Popup = (props) => {
                                     >
                                         No {name} Found
                                     </div>
-                                ) : null //*// set map loop here for show all tweets  -- TweetsCards Here --
+                                ) : <Tweet tweet={legacies[0]} target={target} userInfo={userInfo}/> //*// set map loop here for show all tweets  -- TweetsCards Here --
                             ) : (
                                 // When loading endpoint data
                                 <div className="container text-center mt-5">
@@ -93,7 +106,9 @@ const Popup = (props) => {
                                         </span>
                                     </div>
                                 </div>
-                            )}
+                            )}  
+                            </div>
+                            
                         </div>
                     </div>
                     <div

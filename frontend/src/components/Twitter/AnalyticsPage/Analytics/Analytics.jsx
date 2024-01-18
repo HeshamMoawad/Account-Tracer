@@ -11,7 +11,7 @@ const Analytics = (props) => {
         axios
             .post(AnalyticsURL, {
                 handle: handle,
-                date :  fetchDate.toISOString(),
+                date: fetchDate.toISOString(),
             })
             .then((response) => setAnalytics(response.data)) // console.log(response)
             .catch((error) => console.log(error));
@@ -21,11 +21,19 @@ const Analytics = (props) => {
         <>
             {analytics ? (
                 <div className="container" id="analytics-container">
+                    <div className="row text-center">
+                    <label className="h4 col mt-2">
+                        {fetchDate.getDate()} /{" "}
+                        {fetchDate.getMonth() + 1} /{" "}
+                        {fetchDate.getFullYear()}
+                    </label>
+                    </div>
                     <LineInfo
                         title="Tweets"
                         value={analytics.tweets}
                         hasButton={true}
                         target={analytics.handle}
+                        date={fetchDate}
                         key={Math.random()}
                     />
                     <LineInfo
@@ -33,6 +41,7 @@ const Analytics = (props) => {
                         value={analytics.replies}
                         hasButton={true}
                         target={analytics.handle}
+                        date={fetchDate}
                         key={Math.random()}
                     />
                     <LineInfo

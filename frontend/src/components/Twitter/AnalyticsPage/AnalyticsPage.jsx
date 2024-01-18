@@ -83,7 +83,7 @@ const AnalyticsPage = () => {
                         </div>
                         {
                             userInfo ?
-                            <Analytics handle={userInfo.handle} fetchDate = {fetchDate} currentSelectedDate = {currentSelectedDate} /> :
+                            <Analytics handle={userInfo.handle} fetchDate = {fetchDate} /> :
                             null
                         }
                     </div>
