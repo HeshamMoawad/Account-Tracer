@@ -44,19 +44,16 @@ Error is {e}
         )
         new_login_info.save()
 
-    def updateInstance(self, cookie: str, user: UserObject, twitter_account: TwitterAccount) -> Optional[AccountLoginInfo]:
+    def updateInstance(self, cookie: str, user: UserObject, account_login_info: AccountLoginInfo) -> Optional[AccountLoginInfo]:
         try:
-            login_info = AccountLoginInfo.objects.get(
-                screen_name=twitter_account.handle.replace("@", "")
-            )
-            login_info.name = user['name']
-            login_info.profileImgURL = user['profileImgURL']
-            login_info.description = user['description']
-            login_info.verified = user['verified']
-            login_info.cookies = cookie
-            login_info.token = CookiesParser(cookie).token
-            login_info.save()
-            return login_info
+            account_login_info.name = user['name']
+            account_login_info.profileImgURL = user['profileImgURL']
+            account_login_info.description = user['description']
+            account_login_info.verified = user['verified']
+            account_login_info.cookies = cookie
+            account_login_info.token = CookiesParser(cookie).token
+            account_login_info.save()
+            return account_login_info
         except AccountLoginInfo.DoesNotExist:
             return
         except Exception as e :
@@ -113,7 +110,7 @@ class CheckAccountLoginInfo(BaseChecker):
             return self.updateInstance(
                 cookie=cookie,
                 user=user,
-                twitter_account=self.instance.account,
+                account_login_info=self.instance,
             )
 
     def runAsThread(self):

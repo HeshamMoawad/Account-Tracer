@@ -6,11 +6,13 @@ from ..models import (
     TwitterAccount
 )
 from datetime import datetime , timedelta
-import random , string
+import random , string , logging
+
 
 def accountCheckerPeriodicTask():
+    # logger = logging.getLogger(__name__)
     id = ''.join(random.choices(string.ascii_letters+string.digits, k=15))
-    print("\n\n[+]\tAccount Checker Periodic Task\n\n")
+    print(f"[+]\tStart Checker Periodic Task with ID : {id}")
     sendTMessage(f"""
 Start Checker Periodic Task with ID : \n{id}
     """,
@@ -19,16 +21,16 @@ Start Checker Periodic Task with ID : \n{id}
     accounts = TwitterAccount.objects.all()
     for account in accounts :
         CheckTwitterAccount(account)
-    print("\n\n[-]\tEnd Account Checker Periodic Task\n\n")
     sendTMessage(f"""
 End Checker Periodic Task with ID {id}
     """,
     isDeveloper=True)
+    print(f"[-]\tEnd Checker Periodic Task with ID : {id}")
 
 
 def collectorPeriodicTask():
     id = ''.join(random.choices(string.ascii_letters+string.digits, k=15))
-    print(f"\n\nCollectorPeriodicTask {id}\n\n")
+    print(f"[+]\t Start Collector Periodic Task {id}")
     sendTMessage(f"""
 Start Collector Periodic Task with ID {id}
     """,
@@ -42,7 +44,7 @@ Start Collector Periodic Task with ID {id}
         session.saveMyChats()
         print(f"[-]\tEnd Collect {account}")
 
-    print(f"\n\nEnd Collector Periodic Task \n\n")
+    print(f"[+]\tEnd Collector Periodic Task with ID : {id} ")
     sendTMessage(f"""
 End Collector Periodic Task with ID {id}
     """,
