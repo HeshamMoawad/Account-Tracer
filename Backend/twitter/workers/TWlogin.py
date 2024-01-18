@@ -9,10 +9,8 @@ from seleniumwire.webdriver import ChromeOptions
 from typing import (
     Union
 )
-import logging 
 from ..core.utils import *
 
-# logging.getLogger('seleniumwire').setLevel(logging.WARNING)
 
 class LoginUsingBrowser(object):
     LOGINURL = "https://twitter.com/i/flow/login"
