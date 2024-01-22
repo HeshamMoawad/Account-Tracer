@@ -10,11 +10,13 @@ const ProjectsURL = BASE_URL + "twitter/api/projects";
 
 const AgentsURL = BASE_URL + "twitter/api/agents";
 
-const AccountsURL = BASE_URL + "twitter/api/accounts"
+const AccountsURL = BASE_URL + "twitter/api/accounts";
 
-const AnalyticsURL = BASE_URL + "twitter/api/analytics"
+const AnalyticsURL = BASE_URL + "twitter/api/analytics";
 
-const AccountTweetsURL = BASE_URL + "twitter/api/accountTweets"
+const AccountTweetsURL = BASE_URL + "twitter/api/accountTweets";
+
+const AccountRepliesURL = BASE_URL + "twitter/api/accountReplies";
 
 export { 
     BASE_URL, 
@@ -26,4 +28,5 @@ export {
     CheckExistHandleURL ,
     AnalyticsURL ,
     AccountTweetsURL ,
+    AccountRepliesURL
 };

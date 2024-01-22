@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {AccountTweetsURL} from "../../../../Constants";
+import {AccountTweetsURL , AccountRepliesURL} from "../../../../Constants";
 import Tweet from "./Tweet/Tweet";
+import Reply from "./Tweet/Reply";
+
 
 const Popup = (props) => {
     const { name , target , date} = props;
@@ -16,8 +18,15 @@ const Popup = (props) => {
         if (isShowed){
             console.log(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
             console.log(target , date,name)
+            var url = "";
+            if (name === "Tweets"){
+                var url = AccountTweetsURL
+            }
+            else if (name === "Replies"){
+                var url = AccountRepliesURL
+            }
             axios
-                .get(AccountTweetsURL+`?${new URLSearchParams({
+                .get(url+`?${new URLSearchParams({
                     date : `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}` ,
                     screen_name : target ,
                 })}`)
@@ -89,7 +98,16 @@ const Popup = (props) => {
                                     >
                                         No {name} Found
                                     </div>
-                                ) : <Tweet tweet={legacies[0]} target={target} userInfo={userInfo}/> //*// set map loop here for show all tweets  -- TweetsCards Here --
+                                ) : (legacies.map((legacy)=>{
+                                    if (name === "Tweets"){
+                                        return <Tweet key={Math.random()} tweet={legacy} target={target} userInfo={userInfo}/>
+                                    }
+                                    else if (name === "Replies"){
+                                        return <Reply key={Math.random()} tweet={legacy} target={target} userInfo={userInfo}/>
+                                    }
+                                    return null
+                               
+                            }))   //*  set map loop here for show all tweets  -- TweetsCards Here -- */
                             ) : (
                                 // When loading endpoint data
                                 <div className="container text-center mt-5">

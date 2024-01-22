@@ -1,14 +1,13 @@
 #tweet{
     border: 1px solid gray;
-    border-radius: 1%;
-    /* max-height: 500px; */
+    border-radius: 10px;
+    margin: 10px;
 
 }
 
 #header{
     margin-top: 10px;
 }
-
 button#go-to-tweet{
     color: white;
     background-color: rgb(26, 140, 216);
@@ -16,7 +15,8 @@ button#go-to-tweet{
     border-radius: 10px;
     max-width: 100px;
     min-width: 100px;
-    margin-left: 10px;
+    margin-left: auto;
+    display: block; 
 }
 label#type{
     color: rgb(173, 173, 173);
@@ -30,11 +30,41 @@ label#type{
     max-height: 3.5vw;
     border-radius: 50%;
 }
-
-#body{
+#tweet-image{
     margin-top: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+    width: 465px;
+
+
+}
+#tweet-body{
+    margin-top : 20px;
+    margin-bottom: 15px;
+    max-height : fit-content;
+
 }
 
 #footer{
 
+    margin-left: 35px;
+    margin-bottom: 10px;
+
+}
+
+#svg{
+    max-width: 20%;
+    opacity: 50%;
+
+}
+
+#label{
+    opacity: 70%;
+    margin-left: 5px;
+    font-size: medium;
+
+
+}
+#full-text{
+    text-align: right;
 }
