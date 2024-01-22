@@ -6,14 +6,14 @@ from .types import (
 from .objects import (
     ReplyObject,
     TweetObject ,
-    ChatDetails
+    ChatDetails ,
 )
 import typing
 import datetime
 from .parsers import (
     TweetsParser,
     ChatsParser,
-    CookiesParser
+    CookiesParser ,
 )
 from .constants import (
     USERS_BY_REST_IDS_URL,
@@ -31,10 +31,10 @@ from ..models import (
     AccountLoginInfo,
     Tweet,
     Reply,
-    MediaLink
+    MediaLink ,
 )
-import typing
-import datetime
+import typing , datetime
+from .utils import sendTMessage
 
 
 class TwitterAbastractResponse(Response):
@@ -175,10 +175,24 @@ class TwitterBaseSession(AbstractSession):
         response = self.get(url=USERS_BY_REST_IDS_URL, params=params)
         if response[response.StatusCodeTypes.OK]:
             return response.json()
+        elif response[response.StatusCodeTypes.UNAUTHORIZED]:
+            sendTMessage(
+                f"""Error in _getMe abstract file with response \nResponse : {response}\nText : {response.text}""" ,
+                isDeveloper=True
+            )
+            return {}
         elif response[response.StatusCodeTypes.FORBIDDEN]:
+            sendTMessage(
+                f"""Error in _getMe abstract file with response \nResponse : {response}\nText : {response.text}""" ,
+                isDeveloper=True
+            )
             return {}
         else:
             print(response)
+            sendTMessage(
+                f"""Error in _getMe abstract file with response \nResponse : {response}\nText : {response.text}""" ,
+                isDeveloper=True
+            )
             return {"message": response.text}
 
     def _getMyTweets(
@@ -221,27 +235,37 @@ class TwitterBaseSession(AbstractSession):
             return ChatsParser(response.json(), parse_date=None)
 
     def _saveObject(self, model, instance ):
-        data:dict = instance.data
-        if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
-            obj = model.objects.filter(conversation_id_str = data["conversation_id_str"])
-            if obj.count() >= 1 :
-                obj = obj.first()
+        try :
+            data:dict = instance.data 
+            params = {}
+            if isinstance(instance,ChatDetails):
+                params.update({
+                "chat_datetime" : instance.chat_datetime
+                })
+            if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
+                obj = model.objects.filter(conversation_id_str = data["conversation_id_str"] , **params)
+                if obj.count() >= 1 :
+                    obj = obj.first()
+                else :
+                    obj, created = model.objects.get_or_create(
+                        account=self.account_model,
+                        **data
+                    )
+                    if created :
+                        obj.save()
             else :
                 obj, created = model.objects.get_or_create(
                     account=self.account_model,
                     **data
                 )
-                if created :
+                if created:
                     obj.save()
-        else :
-            obj, created = model.objects.get_or_create(
-                account=self.account_model,
-                **data
+            return obj
+        except Exception as e :
+            sendTMessage(
+                f"""Error in save object with {model} - {instance}""" ,
+                isDeveloper=True
             )
-            if created:
-                obj.save()
-        return obj
-
     def _saveObjects(self, model, iterable: typing.Iterable):
         for it in iterable:
             self._saveObject(model, it)
