@@ -68,12 +68,13 @@ Faild updateInstance with Error \n{e}
         session = TwitterSession(cookie)
         info = session._getMe()
         if info:
-            user_data = info["data"]["users"]
+            user_data = info.get("data",{}).get("users",[])
             if user_data:
                 user_data = user_data[0]["result"]
                 return UserObject(**user_data)
             else :
                 sendTMessage(f"""
+Faild info with {info}
 Faild user_data with {user_data} 
                 """,
                 isDeveloper=True
@@ -103,7 +104,17 @@ class CheckAccountLoginInfo(BaseChecker):
             )
             if login:
                 self.checkCookie(login['cookie'])
+            else :
 
+                sendTMessage(f"""
+Account : {self.instance.account}
+Handle : {self.instance.account.handle}
+Password : {self.instance.account.password}
+will Delete
+please recheck Handle and Password
+                """)
+                self.instance.account.valid = False
+                self.instance.account.save()
     def checkCookie(self, cookie: str):
         user = self.createTwitterSession(cookie)
         if user:
