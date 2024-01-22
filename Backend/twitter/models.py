@@ -41,6 +41,7 @@ class TwitterAccount(models.Model):
     handle = models.CharField(verbose_name="Handle", max_length=50 , unique=True)
     password = models.CharField(verbose_name="Password", max_length=50)
     agent = models.ForeignKey(Agent , on_delete=models.SET_NULL , null=True )
+    valid = models.BooleanField(verbose_name="IsValid",default=True)
     created_datetime = models.DateTimeField(verbose_name="Created Date", auto_now_add=True)
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True, )
 
@@ -54,7 +55,7 @@ class TwitterAccount(models.Model):
 
 
 class AccountLoginInfo(models.Model):
-    account = models.ForeignKey(TwitterAccount,on_delete=models.CASCADE , null=True )
+    account = models.ForeignKey(TwitterAccount,on_delete=models.SET_NULL , null=True )
     rest_id = models.CharField(verbose_name="Rest ID", max_length=50)
     name = models.CharField(verbose_name="Name", max_length=50)
     screen_name = models.CharField(verbose_name="Screen Name", max_length=50 , unique=True)

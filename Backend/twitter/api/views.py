@@ -8,19 +8,24 @@ from rest_framework.status import (
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
-from ..models import (
+from .serializer import (
+
+    # Serializers
+    ProjectSerializer , 
+    AgentSerializer , 
+    AccountLoginInfoSerializer,
+    AnalyticsSerializer ,
+    TweetSerializer ,
+    ReplySerializer,
+
+    # Models 
     Project , 
     Agent , 
     AccountLoginInfo , 
     TwitterAccount ,
     Tweet ,
-     )
-from .serializer import (
-    ProjectSerializer , 
-    AgentSerializer , 
-    AccountLoginInfoSerializer,
-    AnalyticsSerializer ,
-    TweetSerializer
+    Reply
+
     )
 from ..core.session import TwitterSession
 from django.core.exceptions import ObjectDoesNotExist
@@ -186,3 +191,26 @@ class TweetListView(ListAPIView):
             }
         return response
 
+
+class ReplyListView(ListAPIView):
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer
+
+    def get(self,request:Request):
+        date = datetime.strptime(request.query_params.get("date"), "%d/%m/%Y")
+        screen_name = request.query_params.get("screen_name")
+        account = AccountLoginInfo.objects.filter(screen_name=screen_name)
+        if account.count() >= 1 :
+            account = account.first()
+            self.queryset = Reply.objects.filter(account=account.account , created_at__date = date.date())
+        else :
+            self.queryset = []
+        response =  self.list(request)
+        response.data = {
+            "data" : response.data ,
+            "user" : {
+                "profileImgURL" : account.profileImgURL ,
+                "name" : account.name ,
+            }
+            }
+        return response

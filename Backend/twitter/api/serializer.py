@@ -169,3 +169,22 @@ class TweetSerializer(ModelSerializer):
             "quoted_retweted_from"
         ]
         depth = 1
+
+class ReplySerializer(ModelSerializer):
+    media_links = MediaLinksSerializer(many=True,read_only=True)
+    class Meta:
+        model = Reply
+        fields = [
+            "conversation_id_str",
+            "in_reply_to_screen_name",
+            'favorite_count',
+            'reply_count',
+            'retweet_count',
+            'user_id_str',
+            'bookmark_count',
+            'full_text',
+            'created_at',
+            "media_links",
+            "replied_from",
+        ]
+        depth = 1
