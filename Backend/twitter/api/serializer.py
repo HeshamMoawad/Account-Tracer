@@ -7,7 +7,8 @@ from ..models import (
     Chat,
     Tweet,
     Reply ,
-    MediaLink
+    MediaLink ,
+    FollowExtractor
 )
 from rest_framework.serializers import ModelSerializer, SerializerMethodField 
 
@@ -70,17 +71,22 @@ class AnalyticsSerializer(ModelSerializer):
 
     def get_stats(self, obj: AccountLoginInfo):
         followUnfollowObjects = FollowUnFollow \
-            .objects \
-            .filter(
-                account=obj.account,
-                **self.params_as_kwargs
-                ) \
-            .order_by('created_datetime')
-        try:
+                .objects \
+                    .filter(
+                        account=obj.account,
+                        **self.params_as_kwargs
+                        ) \
+                        .order_by('created_datetime')
+        print(followUnfollowObjects.first() , followUnfollowObjects.last())
+        extractor = FollowExtractor(
+            oldObject = followUnfollowObjects.first() ,
+            newObject = followUnfollowObjects.last()
+        )
+        try:    
             return {
-                "follow":  followUnfollowObjects.last().following - followUnfollowObjects[0].following,
-                "unfollow": followUnfollowObjects[0].followers - followUnfollowObjects.last().followers ,
-                "followback": followUnfollowObjects.last().followers - followUnfollowObjects[0].followers ,
+                "follow": extractor.get_follow() ,
+                "unfollow": extractor.get_unfollow() ,
+                "followback": extractor.get_follow_back() ,
             }
         except (IndexError , AttributeError) :
             return {

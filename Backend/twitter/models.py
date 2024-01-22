@@ -193,3 +193,26 @@ class TelegramBotUser(models.Model):
     class Meta:
         verbose_name = 'Telegram Users ID'
         verbose_name_plural = 'Telegram Users IDs'
+
+
+class FollowExtractor(object):
+
+    def __init__(self,oldObject:FollowUnFollow = None , newObject:FollowUnFollow = None ):
+        self.followerCurrent = None
+        self.followingCurrent = None
+        if oldObject and newObject :
+            self._oldFollowers = oldObject.followers
+            self._oldFollowing = oldObject.following
+            self._newFollowers = newObject.followers
+            self._newFollowing = newObject.following
+            self.followerCurrent = self._oldFollowers - self._newFollowers
+            self.followingCurrent = self._oldFollowing - self._newFollowing
+
+    def get_follow_back(self): # get follow back logic (negative)
+        return int(self.followerCurrent * -1 ) if  self.followerCurrent and self.followerCurrent < 0 else 0
+    
+    def get_follow(self): # get new follow logic (positive)
+        return int(self.followingCurrent * -1 ) if  self.followingCurrent and self.followingCurrent < 0  else 0
+
+    def get_unfollow(self): # get unfollow logic (negative)
+        return self.followingCurrent  if self.followingCurrent and self.followingCurrent > 0  else 0
