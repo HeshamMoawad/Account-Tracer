@@ -11,8 +11,12 @@ class TwitterConfig(AppConfig):
             accountCheckerPeriodicTask ,
             )
         scheduler = BackgroundScheduler() # ( seconds - minutes - hours )
-        # scheduler.add_job(collectorPeriodicTask, 'interval', minutes = 2 )  
-        # scheduler.add_job(accountCheckerPeriodicTask, 'interval', hours = 1 )  
+        scheduler.add_job(collectorPeriodicTask, 'interval', minutes = 55 )  
+        scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 0 )  
+        scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 6  )  
+        scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 12 )  
+        scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 18 )  
+        scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 22 )  
         scheduler.start()
         from .signals import (
             addAccountLoginInfoBeforeSaveTwitterAccount ,
