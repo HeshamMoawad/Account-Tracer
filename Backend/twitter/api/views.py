@@ -7,6 +7,7 @@ from rest_framework.status import (
     )
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import ListAPIView
 from .serializer import (
 
@@ -109,6 +110,7 @@ def checkExistAccountFBViews(request:Request):
 
 
 @api_view(["POST"])
+@csrf_exempt
 def analyticsFBViews(request:Request):
     handle = request.data.get("handle",None)
     date = request.data.get("date",None)

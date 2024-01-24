@@ -16,15 +16,46 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path , include
 from django.conf import settings
-from django.conf.urls.static import static
+import re
+from urllib.parse import urlsplit
+from django.core.exceptions import ImproperlyConfigured
+from django.urls import re_path
+from django.views.static import serve
+
+# from django.views.generic import TemplateView
+# from django.shortcuts import render 
+# def home(request):
+#     return render(request,'index.html')
+
+
+def static(prefix, view=serve, **kwargs):
+    if not prefix:
+        raise ImproperlyConfigured("Empty static prefix not permitted")
+    elif urlsplit(prefix).netloc:
+        # No-op if not in debug mode or a non-local prefix.
+        return []
+    return [
+        re_path(r'^%s(?P<path>.*)$' % re.escape(prefix.lstrip('/')), view, kwargs=kwargs),
+    ]
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('twitter/', include("twitter.urls") ),
+
+
+
+]    
+urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)
+
+urlpatterns += [
+    path('api/', include("twitter.urls") ),
+    path("",include("home.urls")),
+
 ]
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
     # import debug_toolbar
     urlpatterns += [
         path('__debug__/', include("debug_toolbar.urls")),

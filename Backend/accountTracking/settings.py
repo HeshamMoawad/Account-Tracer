@@ -30,19 +30,6 @@ DEBUG = config('DEBUG' , default= False , cast = bool)
 
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
 
-# class Utf8StreamHandler(logging.StreamHandler):
-#     def emit(self, record):
-#         try:
-#             msg = self.format(record)
-#             if isinstance(msg, str):
-#                 msg = msg.encode(sys.stdout.encoding or 'utf-8', 'replace')
-#             elif isinstance(msg, bytes):
-#                 msg = msg.decode('utf-8', 'replace').encode(sys.stdout.encoding or 'utf-8', 'replace')
-#             stream = self.stream
-#             stream.write(msg + self.terminator)
-#             self.flush()
-#         except Exception:
-#             self.handleError(record)
 
 ### Logger as File
 # LOGGING = {            
@@ -89,10 +76,6 @@ ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
 
 #     },
 # }
-### Set encoding for console stream separately
-# console_handler = LOGGING['handlers']['console']
-# console_handler['stream'] = sys.stdout
-# console_handler['stream'].encoding = 'utf-8'
 
 
 # Application definition
@@ -112,6 +95,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    'home' ,
     'twitter'
 ]
 
@@ -196,12 +180,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    "/static/",
-]
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] # , "/static/"
+
+# Static root for deployment
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -214,11 +199,11 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [config("CORS_ALLOWED_ORIGINS")]
 
-# Base url to serve media files
-MEDIA_URL = '/media/'
 
 # Path where media is stored'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 
 if DEBUG :
     MIDDLEWARE += [

@@ -17,7 +17,9 @@ class TwitterConfig(AppConfig):
         scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 12 )  
         scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 18 )  
         scheduler.add_job(accountCheckerPeriodicTask, 'cron', hour = 22 )  
-        scheduler.start()
+        if not scheduler.running :
+            print("Not Running")
+            scheduler.start()
         from .signals import (
             addAccountLoginInfoBeforeSaveTwitterAccount ,
             )

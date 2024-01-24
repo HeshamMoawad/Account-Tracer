@@ -24,6 +24,6 @@ urlpatterns = [
     path("api/checkExistHandleFBViews",checkExistHandleFBViews),
     path("api/accountTweets",TweetListView.as_view()) ,
     path("api/accountReplies",ReplyListView.as_view()) ,
-    path("api/testing",testing),
+    # path("testing",testing),
 ] 
 
