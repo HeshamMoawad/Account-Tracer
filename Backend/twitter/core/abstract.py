@@ -235,24 +235,27 @@ class TwitterBaseSession(AbstractSession):
             return ChatsParser(response.json(), parse_date=None)
 
     def _saveObject(self, model, instance ):
-        try :
-            data:dict = instance.data 
-            params = {}
-            if isinstance(instance,ChatDetails):
-                params.update({
-                "chat_datetime" : instance.chat_datetime
-                })
-            if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
-                obj = model.objects.filter(conversation_id_str = data["conversation_id_str"] , **params)
-                if obj.count() >= 1 :
-                    obj = obj.first()
-                else :
-                    obj, created = model.objects.get_or_create(
-                        account=self.account_model,
-                        **data
-                    )
-                    if created :
-                        obj.save()
+        data:dict = instance.data 
+        params = {}
+        if isinstance(instance,ChatDetails):
+            params.update({
+            "chat_datetime__date" : instance.chat_datetime.date()
+            })
+        if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
+            obj = model.objects.filter(conversation_id_str = data["conversation_id_str"] )
+            if obj.count() >= 1 :
+                obj = obj.first()
+            else :
+                obj, created = model.objects.get_or_create(
+                    account=self.account_model,
+                    **data
+                )
+                if created :
+                    obj.save()
+        else :
+            obj = model.objects.filter(conversation_id = data["conversation_id"] , **params )
+            if obj.count() >= 1 :
+                obj = obj.first()
             else :
                 obj, created = model.objects.get_or_create(
                     account=self.account_model,
@@ -260,12 +263,8 @@ class TwitterBaseSession(AbstractSession):
                 )
                 if created:
                     obj.save()
-            return obj
-        except Exception as e :
-            sendTMessage(
-                f"""Error in save object with {model} - {instance}""" ,
-                isDeveloper=True
-            )
+        return obj
+
     def _saveObjects(self, model, iterable: typing.Iterable):
         for it in iterable:
             self._saveObject(model, it)
