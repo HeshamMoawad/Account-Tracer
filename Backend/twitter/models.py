@@ -46,7 +46,7 @@ class TwitterAccount(models.Model):
     updated_datetime = models.DateTimeField(verbose_name="Updated Date", auto_now=True, )
 
     def __str__(self) -> str:
-        return f"{self.handle} - {self.agent} - Created at {self.created_datetime.date()}"
+        return f"{self.handle} - {self.agent} - {self.valid} - Created at {self.created_datetime.date()}"
 
     class Meta:
         verbose_name = 'Twitter Account'

@@ -239,30 +239,24 @@ class TwitterBaseSession(AbstractSession):
         params = {}
         if isinstance(instance,ChatDetails):
             params.update({
+            "conversation_id":instance.conversation_id,
             "chat_datetime__date" : instance.chat_datetime.date()
             })
-        if "conversation_id_str" in data.keys() and not isinstance(instance,ChatDetails):
-            obj = model.objects.filter(conversation_id_str = data["conversation_id_str"] )
-            if obj.count() >= 1 :
-                obj = obj.first()
-            else :
-                obj, created = model.objects.get_or_create(
-                    account=self.account_model,
-                    **data
-                )
-                if created :
-                    obj.save()
         else :
-            obj = model.objects.filter(conversation_id = data["conversation_id"] , **params )
-            if obj.count() >= 1 :
-                obj = obj.first()
-            else :
-                obj, created = model.objects.get_or_create(
-                    account=self.account_model,
-                    **data
-                )
-                if created:
-                    obj.save()
+            params.update({
+                "conversation_id_str" : data["conversation_id_str"]
+            })
+
+        obj = model.objects.filter(**params)
+        if obj.count() >= 1 :
+            obj = obj.first()
+        else :
+            obj, created = model.objects.get_or_create(
+                account=self.account_model,
+                **data
+            )
+            if created :
+                obj.save()
         return obj
 
     def _saveObjects(self, model, iterable: typing.Iterable):
