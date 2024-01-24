@@ -25,9 +25,16 @@ class RepliesAdmin(admin.ModelAdmin):
 class FollowUnFollowAdmin(admin.ModelAdmin):
     list_filter = ( "account" , "created_datetime")
 
+class TwitterAccountAdmin(admin.ModelAdmin):
+    list_filter = ( "valid" , "agent")
+
+class AgentAdmin(admin.ModelAdmin):
+    list_filter = ( "project" , )
+
+
 admin.site.register(Project)
-admin.site.register(Agent)
-admin.site.register(TwitterAccount)
+admin.site.register(Agent , AgentAdmin)
+admin.site.register(TwitterAccount , TwitterAccountAdmin)
 admin.site.register(AccountLoginInfo)
 admin.site.register(Tweet , TweetsAdmin )
 admin.site.register(Chat , ChatAdmin)
