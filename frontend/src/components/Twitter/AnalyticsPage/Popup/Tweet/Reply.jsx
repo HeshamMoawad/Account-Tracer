@@ -45,6 +45,7 @@ const Tweet = (props) => {
                                               src={url.url}
                                               alt=""
                                               id="tweet-image"
+                                              loading="lazy"
                                           />
                                       </div>
                                   );

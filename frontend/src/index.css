@@ -1,6 +1,13 @@
+*{
+    color:white;
+    background-color: rgba(0,3,34,255);
+    
+}
 #body{
+    color:white;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: rgba(0,3,34,255);
 
 }

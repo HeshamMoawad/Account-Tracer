@@ -10,6 +10,7 @@ import AccountsPage from "./components/Twitter/AccountsPage/AccountsPage";
 import "./index.css";
 import Twitter from "./components/Twitter/Twitter";
 import AnalyticsPage from "./components/Twitter/AnalyticsPage/AnalyticsPage";
+import NotFound from "./components/NotFound/NotFound";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -20,6 +21,7 @@ export default function App() {
       <div id="body">
         <Routes>
           <Route index element={<Home />} />
+          <Route element={<NotFound/>} />
           <Route path="twitter" element={<Twitter />}>
             <Route index element={<AgentsPage />} />
             <Route path="agents" element={<AgentsPage />} />

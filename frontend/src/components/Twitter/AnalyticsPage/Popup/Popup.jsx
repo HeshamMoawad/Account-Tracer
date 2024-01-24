@@ -62,7 +62,7 @@ const Popup = (props) => {
                         aria-labelledby="offcanvasWithBothOptionsLabel"
                         aria-modal="true"
                         role="dialog"
-                        style={{ minWidth: "35vw" }}
+                        style={{ minWidth: "35vw" , backgroundColor:"transparent"}}
                     >
                         <div
                             className="offcanvas-header text-center"

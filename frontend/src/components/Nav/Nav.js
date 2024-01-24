@@ -1,6 +1,7 @@
 import React from 'react';
 import './Nav.css'
-import Logo from '../../assets/testLogo.jpg'
+// import Logo from '../../assets/testLogo.jpg'
+import Logo from '../../assets/logo.jpg'
 import { Link } from 'react-router-dom';
 
 
@@ -20,17 +21,17 @@ const Nav = () => {
                 </div>
                 <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li>
-                    <Link to="" className="nav-link px-2">
+                    <Link to="" className="text-white fw-bold px-2">
                     Home
                     </Link>
                 </li>
                 <li>
-                    <Link to="twitter" className="nav-link px-2">
+                    <Link to="twitter" className="text-white fw-bold px-2">
                     Twitter
                     </Link>
                 </li>
                 <li>
-                    <Link to="tiktok" className="nav-link px-2">
+                    <Link to="tiktok" className="text-white fw-bold px-2">
                     TikTok
                     </Link>
                 </li>

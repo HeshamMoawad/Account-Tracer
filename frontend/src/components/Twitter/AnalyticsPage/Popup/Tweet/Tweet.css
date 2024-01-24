@@ -54,7 +54,10 @@ label#type{
 
 #svg{
     max-width: 20%;
-    opacity: 50%;
+    opacity: 80%;
+    background-color: white;
+    border: 1px white solid;
+    border-radius: 3px;
 
 }
 

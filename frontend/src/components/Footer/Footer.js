@@ -6,7 +6,7 @@ import facebook from '../../assets/facebook.png' ;
 import whatsapp from '../../assets/whatsapp.png';
 import x from '../../assets/x.png';
 import instgram from '../../assets/instagram.png';
-import Logo from '../../assets/testLogo.jpg';
+import Logo from '../../assets/logo.jpg';
 
 
 
@@ -24,7 +24,7 @@ const Footer = () => {
 
 
                 </a>
-                <span className="mb-3 mb-md-0 text-body-secondary">
+                <span className="mb-3 mb-md-0">
                     © 2023 El-Alamia Company, Inc
                 </span>
                 </div>

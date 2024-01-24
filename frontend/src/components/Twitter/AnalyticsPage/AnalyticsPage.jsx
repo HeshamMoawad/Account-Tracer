@@ -4,7 +4,7 @@ import Calendar from "react-calendar";
 import Analytics from "./Analytics/Analytics";
 import axios from "axios";
 import {CheckExistHandleURL} from "../../../Constants";
-import "react-calendar/dist/Calendar.css";
+// import "react-calendar/dist/Calendar.css";
 import "./AnalyticsPage.css";
 
 

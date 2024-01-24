@@ -36,7 +36,7 @@ const IconButton = (props) => {
             ? item.color
             : isHovering
             ? item.color
-            : "black",
+            : "#51907B",
         }}
         onMouseEnter={mouseOverLeaveHandler}
         onMouseLeave={mouseOverLeaveHandler}

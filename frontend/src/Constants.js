@@ -1,22 +1,22 @@
-const BASE_URL = "http://192.168.3.84:8000/"; 
+const BASE_URL = ""; 
 
-const TWITTER_GET_ACCOUNTS_URL = BASE_URL + "twitter/api/getAccounts";
+const TWITTER_GET_ACCOUNTS_URL = BASE_URL + "/api/api/getAccounts";
 
-const CheckExistAccountURL = BASE_URL + "twitter/api/checkExistAccountFBViews";
+const CheckExistAccountURL = BASE_URL + "/api/api/checkExistAccountFBViews";
 
-const CheckExistHandleURL = BASE_URL + "twitter/api/checkExistHandleFBViews";
+const CheckExistHandleURL = BASE_URL + "/api/api/checkExistHandleFBViews";
 
-const ProjectsURL = BASE_URL + "twitter/api/projects";
+const ProjectsURL = BASE_URL + "/api/api/projects";
 
-const AgentsURL = BASE_URL + "twitter/api/agents";
+const AgentsURL = BASE_URL + "/api/api/agents";
 
-const AccountsURL = BASE_URL + "twitter/api/accounts";
+const AccountsURL = BASE_URL + "/api/api/accounts";
 
-const AnalyticsURL = BASE_URL + "twitter/api/analytics";
+const AnalyticsURL = BASE_URL + "/api/api/analytics";
 
-const AccountTweetsURL = BASE_URL + "twitter/api/accountTweets";
+const AccountTweetsURL = BASE_URL + "/api/api/accountTweets";
 
-const AccountRepliesURL = BASE_URL + "twitter/api/accountReplies";
+const AccountRepliesURL = BASE_URL + "/api/api/accountReplies";
 
 export { 
     BASE_URL, 
