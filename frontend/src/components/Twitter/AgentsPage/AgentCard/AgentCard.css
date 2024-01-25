@@ -1,0 +1,16 @@
+#card{
+    margin-top: 50px;
+
+
+}
+
+
+#card-container:hover{
+    padding-left: 10px;
+    padding-bottom: 15px;
+}
+.card-title {
+    color:white;
+    background-color: rgba(0,3,34,255);
+
+}

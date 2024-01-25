@@ -1,0 +1,73 @@
+#tweet{
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin: 10px;
+
+}
+
+#header{
+    margin-top: 10px;
+}
+button#go-to-tweet{
+    color: white;
+    background-color: rgb(26, 140, 216);
+    border: 1px solid gray;
+    border-radius: 10px;
+    max-width: 100px;
+    min-width: 100px;
+    margin-left: auto;
+    display: block; 
+}
+label#type{
+    color: rgb(173, 173, 173);
+    /* margin-left: 50px; */
+    text-align: right;
+}
+.img#account-img-as-logo{
+    min-width: 1vw;
+    max-width: 3.5vw;
+    min-height: 1vw;
+    max-height: 3.5vw;
+    border-radius: 50%;
+}
+#tweet-image{
+    margin-top: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+    width: 465px;
+
+
+}
+#tweet-body{
+    margin-top : 20px;
+    margin-bottom: 15px;
+    max-height : fit-content;
+
+}
+
+#footer{
+
+    margin-left: 35px;
+    margin-bottom: 10px;
+
+}
+
+#svg{
+    max-width: 20%;
+    opacity: 80%;
+    background-color: white;
+    border: 1px white solid;
+    border-radius: 3px;
+
+}
+
+#label{
+    opacity: 70%;
+    margin-left: 5px;
+    font-size: medium;
+
+
+}
+#full-text{
+    text-align: right;
+}
