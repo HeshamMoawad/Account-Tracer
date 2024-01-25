@@ -162,10 +162,10 @@ cython_debug/
 frontend/build.rar
 # images
 *.jpg
-*.png
 *.svg
 *.webp
 
 
 # images path 
-Backend/projects-images/*
+Backend/media/twitter/projects-images/*
+backend/staticfiles/*
