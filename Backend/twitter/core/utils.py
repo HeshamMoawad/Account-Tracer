@@ -10,7 +10,7 @@ def __sendTMessage(user_id:int,msg):
             'chat_id': user_id ,
             'text': f"{datetime.datetime.now().strftime('%Y-%m-%d & %H:%M:%S')}\n{msg}" ,
         }
-        requests.get(TELEGRAM_BOT_URL,params=params)
+        resp = requests.get(TELEGRAM_BOT_URL,params=params)
     except Exception as e :
         print (f"[-]\tError in __sendTMessage: {e}")
 
@@ -21,6 +21,7 @@ def __sendTMessageDev(msg):
             'text': f"{datetime.datetime.now().strftime('%Y-%m-%d & %H:%M:%S')}\n{msg}" ,
         }
         requests.get(TELEGRAM_BOT_DEV_URL,params=params)
+
     except Exception as e :
         print (f"[-]\tError in __sendTMessageDev: {e}")
 

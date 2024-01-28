@@ -29,13 +29,13 @@ End Checker Periodic Task with ID {id}
     handles = []
     for account in accounts :
         handles.append(account.handle)
-
-    sendTMessage(
-            f"""
-Please Check this accounts or remove them 
-Handles : {''.join(handles)}
-            """
-        )
+    if handles :
+        sendTMessage(
+                f"""
+    Please Check this accounts or remove them 
+    Handles : {''.join(handles)}
+                """
+            )
     print(f"[-]\tEnd Checker Periodic Task with ID : {id}")
 
 
